@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
-from .models import User, Company, Vendor, Employee, UserType
+from .models import User, Company, CompanyBranch, CompanyBuilding, Vendor, Employee, UserType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -103,3 +103,34 @@ class RegisterEmployeeSerializer(serializers.ModelSerializer):
         )
 
         return Employee.objects.create(user=user, **validated_data)
+
+class CreateUserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class SetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+
+class OTPVerifySerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+
+
+class CompanyInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ["name", "domain", "bio", "location", "logo"]
+
+
+class BranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyBranch
+        fields = ["branch_name", "address", "city", "state"]
+
+
+class BuildingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyBuilding
+        fields = ["branch", "building_name", "floor_count"]
