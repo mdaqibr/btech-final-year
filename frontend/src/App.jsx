@@ -6,6 +6,7 @@ import CompanyLayout from "./layouts/CompanyLayout";
 import VendorLayout from "./layouts/VendorLayout";
 import CustomerLayout from "./layouts/CustomerLayout";
 import WorkerLayout from "./layouts/WorkerLayout";
+import LoginLayout from "./layouts/LoginLayout";
 
 // Pages
 import Login from "./pages/Login";
@@ -13,6 +14,10 @@ import CompanyDashboard from "./pages/company/Dashboard";
 import VendorDashboard from "./pages/vendor/Dashboard";
 import CustomerDashboard from "./pages/customer/Dashboard";
 import WorkerDashboard from "./pages/worker/Dashboard";
+import Landing from "./pages/Landing";
+
+// Registratin pages
+import CompanyRegister from "./pages/company/CompanyRegister";
 
 // Auth Utility
 const isAuthenticated = () => {
@@ -36,7 +41,14 @@ function App() {
     <Routes>
       {/* Public */}
       {/* TODO: if logged in then do not show login button. */}
-      <Route path="/login" element={<Login />} />
+      
+      <Route path="/" element={<Landing />} />
+
+      <Route path="/companies/new" element={<CompanyRegister />} />
+
+      <Route element={<LoginLayout />}>
+        <Route path="/login" element={<Login />} />
+      </Route>
 
       {/* Company */}
       <Route

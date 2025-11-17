@@ -60,58 +60,52 @@ const Login = () => {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card shadow p-4" style={{ width: "400px", borderRadius: "12px" }}>
-        <h3 className="text-center mb-4 text-primary fw-bold">
-          Cafetero Login
-        </h3>
+    <div className="card shadow-lg p-4 bg-light" style={{ borderRadius: "16px" }}>
+      <h3 className="text-center mb-4 text-primary fw-bold">Cafetero Login</h3>
 
-        {error && (
-          <div className="alert alert-danger text-center">{error}</div>
-        )}
+      {error && <div className="alert alert-danger text-center">{error}</div>}
 
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Email Address</label>
-            <input
-              type="email"
-              className="form-control rounded-pill"
-              placeholder="yourname@company.com"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+      <form onSubmit={handleLogin}>
+        <div className="mb-3">
+          <label className="form-label fw-semibold d-flex">Email</label>
+          <input
+            type="email"
+            className="form-control rounded-pill"
+            placeholder="yourname@company.com"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
-          <div className="mb-2">
-            <label className="form-label fw-semibold">Password</label>
-            <input
-              type="password"
-              className="form-control rounded-pill"
-              placeholder="********"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+        <div className="mb-2">
+          <label className="form-label fw-semibold d-flex">Password</label>
+          <input
+            type="password"
+            className="form-control rounded-pill"
+            placeholder="********"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary w-100 rounded-pill mt-3"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="spinner-border spinner-border-sm"></span>
-            ) : (
-              "Login"
-            )}
-          </button>
-        </form>
+        <button
+          type="submit"
+          className="btn btn-primary w-100 rounded-pill mt-3"
+          disabled={loading}
+        >
+          {loading ? (
+            <span className="spinner-border spinner-border-sm"></span>
+          ) : (
+            "Login"
+          )}
+        </button>
+      </form>
 
-        <p className="text-center mt-3 text-muted" style={{ fontSize: "14px" }}>
-          Powered by <b>Cafetero</b>
-        </p>
-      </div>
+      <p className="text-center mt-3 text-muted" style={{ fontSize: "14px" }}>
+        Powered by <b>Cafetero</b>
+      </p>
     </div>
   );
 };
