@@ -3,8 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .pretty-card {
+        background: linear-gradient(135deg, #ffffff, #f5f9ff);
+        border-radius: 18px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+      }
+      .pretty-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      }
+      .feature-icon {
+        padding: 18px;
+        border-radius: 14px;
+        display: inline-flex;
+        margin-bottom: 16px;
+      }
+      .icon-blue { background: #e8f1ff; color: #2b6dff; }
+      .icon-green { background: #e9fff4; color: #18b079; }
+      .icon-purple { background: #f2e9ff; color: #8e44ec; }
+
+      .price-card {
+        background: linear-gradient(135deg, #e9f7ff, #ffffff);
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
