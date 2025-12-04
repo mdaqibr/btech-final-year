@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { addBranches } from "../../../api/company";
 import { Plus, Trash2, Building2, MapPin, Loader2, CheckCircle } from "lucide-react";
+import GreetingBlock from "../../../components/AddBranchesHeader.jsx";
 
 const COUNTRY_LIST = [
   { code: "IN", name: "India", flag: "🇮🇳" },
@@ -115,12 +116,12 @@ const Step5Branches = ({ onSubmit, companyId }) => {
       transition={{ duration: 0.3 }}
       style={{ maxHeight: "85vh", overflowY: "auto", paddingRight: "5px" }}
     >
-      <h4 className="fw-bold mb-3">Branch & Building Setup</h4>
+      <GreetingBlock email={null} />
 
       {/* UI Message */}
       {msg.text && (
         <div
-          className={`alert rounded-pill py-2 px-3 mb-3 ${
+          className={`alert round-shape py-2 px-3 mb-3 ${
             msg.type === "error" ? "alert-danger" : "alert-success"
           } d-flex align-items-center gap-2`}
         >
@@ -143,7 +144,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
               {branches.length > 1 && (
                 <button
                   type="button"
-                  className="btn btn-outline-danger btn-sm rounded-pill d-flex align-items-center gap-1"
+                  className="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
                   onClick={() => removeBranch(bi)}
                 >
                   <Trash2 size={15} /> Remove
@@ -152,7 +153,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
             </div>
 
             <input
-              className="form-control mb-2 rounded-pill"
+              className="form-control mb-2"
               placeholder="Branch Name"
               value={b.branch_name}
               onChange={(e) => handleChange(bi, "branch_name", e.target.value)}
@@ -167,13 +168,13 @@ const Step5Branches = ({ onSubmit, companyId }) => {
 
             <div className="d-flex gap-2 mb-2">
               <input
-                className="form-control rounded-pill"
+                className="form-control"
                 placeholder="City"
                 value={b.city}
                 onChange={(e) => handleChange(bi, "city", e.target.value)}
               />
               <input
-                className="form-control rounded-pill"
+                className="form-control"
                 placeholder="State"
                 value={b.state}
                 onChange={(e) => handleChange(bi, "state", e.target.value)}
@@ -181,7 +182,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
             </div>
 
             <select
-              className="form-select rounded-pill mb-2"
+              className="form-select mb-2"
               value={b.country}
               onChange={(e) => handleChange(bi, "country", e.target.value)}
             >
@@ -201,7 +202,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
             {b.buildings.map((bl, bli) => (
               <div key={bli} className="d-flex gap-2 mb-2">
                 <input
-                  className="form-control rounded-pill"
+                  className="form-control"
                   placeholder="Building Name"
                   value={bl.building_name}
                   onChange={(e) =>
@@ -210,7 +211,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
                 />
 
                 <input
-                  className="form-control rounded-pill"
+                  className="form-control"
                   placeholder="Floors"
                   type="number"
                   value={bl.floor_count}
@@ -222,7 +223,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
                 {b.buildings.length > 1 && (
                   <button
                     type="button"
-                    className="btn btn-outline-danger rounded-pill d-flex align-items-center"
+                    className="btn btn-outline-danger d-flex align-items-center"
                     onClick={() => removeBuilding(bi, bli)}
                   >
                     <Trash2 size={15} />
@@ -233,7 +234,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
 
             <button
               type="button"
-              className="btn btn-outline-primary rounded-pill btn-sm mt-1 d-flex align-items-center gap-1"
+              className="btn btn-outline-primary btn-sm mt-1 d-flex align-items-center gap-1"
               onClick={() => addBuilding(bi)}
             >
               <Plus size={16} /> Add Building
@@ -243,7 +244,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
 
         <button
           type="button"
-          className="btn btn-outline-secondary rounded-pill w-100 mb-3 d-flex justify-content-center gap-2"
+          className="btn btn-outline-secondary w-100 mb-3 d-flex justify-content-center gap-2"
           onClick={addBranch}
         >
           <Plus size={18} /> Add Another Branch
@@ -252,7 +253,7 @@ const Step5Branches = ({ onSubmit, companyId }) => {
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-primary w-100 rounded-pill d-flex justify-content-center align-items-center gap-2"
+          className="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-2"
         >
           {loading ? (
             <>

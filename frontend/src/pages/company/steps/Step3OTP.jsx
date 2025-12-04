@@ -2,8 +2,9 @@ import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { verifyOTP, sendOTP } from "../../../api/company";
 import { Loader2, XCircle } from "lucide-react";
+import GreetingBlock from "../../../components/OtpHeader.jsx";
 
-const Step3OTP = ({ email, onBack, onNext }) => {
+const Step3OTP = ({ email, onBack, onNext, theme }) => {
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
@@ -11,35 +12,25 @@ const Step3OTP = ({ email, onBack, onNext }) => {
 
   const showMessage = (type, text) => {
     setMsg({ type, text });
-
-    // Optional auto-hide after 4s
     setTimeout(() => setMsg({ type: "", text: "" }), 4000);
   };
 
-  // Handle OTP input
   const handleChange = (index, value) => {
     if (!/^[0-9]?$/.test(value)) return;
-
     const updated = [...otp];
     updated[index] = value;
     setOtp(updated);
-
-    if (value && index < 5) {
-      inputsRef.current[index + 1]?.focus();
-    }
+    if (value && index < 5) inputsRef.current[index + 1]?.focus();
   };
 
-  // Handle Backspace
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputsRef.current[index - 1]?.focus();
     }
   };
 
-  // Verify OTP
   const handleVerify = async (e) => {
     e.preventDefault();
-
     const finalOtp = otp.join("");
     if (finalOtp.length !== 6) {
       showMessage("error", "Please enter all 6 digits");
@@ -47,7 +38,6 @@ const Step3OTP = ({ email, onBack, onNext }) => {
     }
 
     setLoading(true);
-
     const res = await verifyOTP(email, finalOtp);
     setLoading(false);
 
@@ -59,7 +49,6 @@ const Step3OTP = ({ email, onBack, onNext }) => {
     onNext();
   };
 
-  // Resend OTP
   const handleResend = async () => {
     setLoading(true);
     const res = await sendOTP(email);
@@ -81,21 +70,16 @@ const Step3OTP = ({ email, onBack, onNext }) => {
       exit={{ opacity: 0, x: -50 }}
       transition={{ duration: 0.3 }}
     >
-      <h4 className="fw-bold mb-3">Verify your email</h4>
+      <GreetingBlock email={email} onBack={onBack} theme={theme} />
 
-      <p>
-        Enter the 6-digit code sent to <b>{email}</b>{" "}
-        <button onClick={onBack} className="btn btn-link p-0 ms-1">
-          Change
-        </button>
-      </p>
-
-      {/* UI Message Box */}
       {msg.text && (
         <div
-          className={`alert rounded-pill py-2 px-3 mb-3 ${
-            msg.type === "error" ? "alert-danger" : "alert-success"
-          } d-flex align-items-center gap-2`}
+          className="d-flex align-items-center gap-2 mb-3 p-2"
+          style={{
+            backgroundColor: msg.type === "error" ? "#FEE2E2" : "#D1FAE5",
+            color: msg.type === "error" ? "#B91C1C" : "#065F46",
+            borderRadius: "6px",
+          }}
         >
           <XCircle size={16} />
           <span className="small">{msg.text}</span>
@@ -114,7 +98,12 @@ const Step3OTP = ({ email, onBack, onNext }) => {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               className="form-control text-center fw-bold"
-              style={{ width: "45px", fontSize: "1.2rem" }}
+              style={{
+                width: "45px",
+                fontSize: "1.2rem",
+                borderColor: theme.primary,
+                color: theme.text.body,
+              }}
             />
           ))}
         </div>
@@ -124,7 +113,8 @@ const Step3OTP = ({ email, onBack, onNext }) => {
           type="button"
           disabled={loading}
           onClick={handleResend}
-          className="btn btn-link d-flex align-items-center gap-1 mx-auto"
+          className="btn d-flex align-items-center gap-1 mx-auto mb-3"
+          style={{ color: theme.primary }}
         >
           {loading && <Loader2 size={16} className="spin" />}
           Resend OTP
@@ -134,13 +124,13 @@ const Step3OTP = ({ email, onBack, onNext }) => {
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-primary w-100 rounded-pill mt-3 d-flex justify-content-center align-items-center gap-2"
+          className="btn w-100 d-flex justify-content-center align-items-center gap-2"
+          style={{ backgroundColor: theme.primary, color: "#fff" }}
         >
           {loading ? <Loader2 size={18} className="spin" /> : "Verify →"}
         </button>
       </form>
 
-      {/* Loader animation */}
       <style>{`
         .spin {
           animation: spin 0.8s linear infinite;

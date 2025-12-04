@@ -1,0 +1,32 @@
+/* src/styles/vendor.css - purple theme */
+.vendor-right {
+  background: #fff;
+  color: #222;
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
+}
+
+.vendor-brand {
+  color: #6f42c1;
+  font-weight: 800;
+  font-size: 1.6rem;
+}
+
+.vendor-cta {
+  color: rgba(255,255,255,0.95);
+}
+
+.btn-purple {
+  background: linear-gradient(90deg,#6f42c1,#7b61d5);
+  color: #fff;
+  border: none;
+}
+.btn-outline-purple {
+  border: 1px solid #9b76e6;
+  color: #6f42c1;
+}
+.rounded-start-round-shape { border-top-left-radius: 50px; border-bottom-left-radius: 50px; }
+.rounded-end-round-shape { border-top-right-radius: 50px; border-bottom-right-radius: 50px; }
+.round-shape { border-radius: 50px; }
+.small-muted { color: #7b6b9a; font-size: 0.9rem; }
+.alert-round-shape { border-radius: 999px; padding: 0.45rem 0.75rem; }

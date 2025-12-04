@@ -58,7 +58,7 @@ const Navbar = ({ links }) => {
           {/* User Section */}
           <div className="dropdown">
             <button
-              className="btn btn-outline-primary dropdown-toggle rounded-pill"
+              className="btn btn-outline-primary dropdown-toggle"
               data-bs-toggle="dropdown"
             >
               👤 {user.email?.split("@")[0] || "User"}

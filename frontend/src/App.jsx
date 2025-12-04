@@ -18,6 +18,8 @@ import Landing from "./pages/Landing";
 
 // Registratin pages
 import CompanyRegister from "./pages/company/CompanyRegister";
+import VendorRegister from "./pages/vendor/VendorRegister";
+import EmployeeRegister from "./pages/employee/EmployeeRegister";
 
 // Auth Utility
 const isAuthenticated = () => {
@@ -45,6 +47,8 @@ function App() {
       <Route path="/" element={<Landing />} />
 
       <Route path="/companies/new" element={<CompanyRegister />} />
+      <Route path="/vendors/new" element={<VendorRegister />} />
+      <Route path="/employees/new" element={<EmployeeRegister />} />
 
       <Route element={<LoginLayout />}>
         <Route path="/login" element={<Login />} />

@@ -8,12 +8,14 @@ import {
 } from "../../../api/company";
 
 // Lucide Icons
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, XCircle } from "lucide-react";
+import GreetingTitle from "../../../components/PasswordHeader";
 
-const Step2Password = ({ email, onBack, onNext, setPassword }) => {
+const Step2Password = ({ email, onBack, onNext, setPassword, theme }) => {
   const [password, updatePassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState({ type: "", text: "" });
 
   const [validations, setValidations] = useState({
     length: false,
@@ -33,9 +35,14 @@ const Step2Password = ({ email, onBack, onNext, setPassword }) => {
 
   const handleNext = async (e) => {
     e.preventDefault();
-    if (!Object.values(validations).every(Boolean)) return;
+
+    if (!Object.values(validations).every(Boolean)) {
+      setMsg({ type: "error", text: "Please fix all password requirements." });
+      return;
+    }
 
     setLoading(true);
+    setMsg({ type: "", text: "" });
 
     try {
       setPassword(password);
@@ -45,10 +52,10 @@ const Step2Password = ({ email, onBack, onNext, setPassword }) => {
         await triggerOTP(email);
         onNext();
       } else {
-        alert(res.message);
+        setMsg({ type: "error", text: res.message || "Something went wrong" });
       }
     } catch (err) {
-      alert("Something went wrong");
+      setMsg({ type: "error", text: "Something went wrong" });
     }
 
     setLoading(false);
@@ -62,31 +69,58 @@ const Step2Password = ({ email, onBack, onNext, setPassword }) => {
       exit={{ opacity: 0, x: -50 }}
       transition={{ duration: 0.3 }}
     >
-      <p className="text-muted small">
+      <GreetingTitle
+        theme={theme}
+        userType="Company Admin"
+        purpose="Please create a secure password to continue with your registration."
+      />
+
+      {msg.text && (
+        <div
+          className="d-flex align-items-center gap-2 mb-3 p-2"
+          style={{
+            backgroundColor: msg.type === "error" ? "#FEE2E2" : "#D1FAE5",
+            color: msg.type === "error" ? "#B91C1C" : "#065F46",
+            borderRadius: "6px",
+          }}
+        >
+          <XCircle size={16} />
+          <span className="small">{msg.text}</span>
+        </div>
+      )}
+
+      <p className="small" style={{ color: theme.text.body }}>
         <b>{email}</b>{" "}
-        <button onClick={onBack} className="btn btn-link p-0 ms-1">
+        <button
+          onClick={onBack}
+          className="btn btn-link p-0 ms-1"
+          style={{ color: theme.primary }}
+        >
           Change
         </button>
       </p>
 
-      <h4 className="fw-bold mb-3">Create a password</h4>
+      <h4 className="fw-bold mb-3" style={{ color: theme.text.title }}>
+        Create your password
+      </h4>
 
       <form onSubmit={handleNext}>
         {/* Password Input */}
         <div className="input-group mb-3">
           <input
             type={show ? "text" : "password"}
-            className="form-control rounded-start-pill"
+            className="form-control"
             placeholder="Enter your password"
             value={password}
             onChange={(e) => updatePassword(e.target.value)}
             required
+            style={{ borderColor: theme.primary, color: theme.text.body }}
           />
-
           <button
             type="button"
-            className="btn btn-outline-secondary rounded-end-pill d-flex align-items-center"
+            className="btn btn-outline-secondary d-flex align-items-center"
             onClick={() => setShow(!show)}
+            style={{ borderColor: theme.primary, color: theme.text.body }}
           >
             {show ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -94,16 +128,16 @@ const Step2Password = ({ email, onBack, onNext, setPassword }) => {
 
         {/* Validation List */}
         <ul className="list-unstyled small">
-          <li className={validations.length ? "text-success" : "text-muted"}>
+          <li style={{ color: validations.length ? "#16A34A" : theme.text.subtitle }}>
             ✓ Must include 8 characters
           </li>
-          <li className={validations.alphabet ? "text-success" : "text-muted"}>
+          <li style={{ color: validations.alphabet ? "#16A34A" : theme.text.subtitle }}>
             ✓ Must include at least 1 alphabet
           </li>
-          <li className={validations.number ? "text-success" : "text-muted"}>
+          <li style={{ color: validations.number ? "#16A34A" : theme.text.subtitle }}>
             ✓ Must include a number
           </li>
-          <li className={validations.special ? "text-success" : "text-muted"}>
+          <li style={{ color: validations.special ? "#16A34A" : theme.text.subtitle }}>
             ✓ Must include a special character
           </li>
         </ul>
@@ -112,7 +146,8 @@ const Step2Password = ({ email, onBack, onNext, setPassword }) => {
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-primary w-100 rounded-pill mt-3 d-flex justify-content-center align-items-center gap-2"
+          className="btn w-100 mt-3 d-flex justify-content-center align-items-center gap-2"
+          style={{ backgroundColor: theme.primary, color: "#fff" }}
         >
           {loading ? (
             <>

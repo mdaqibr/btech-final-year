@@ -70,7 +70,7 @@ const Login = () => {
           <label className="form-label fw-semibold d-flex">Email</label>
           <input
             type="email"
-            className="form-control rounded-pill"
+            className="form-control round-shape"
             placeholder="yourname@company.com"
             required
             value={email}
@@ -82,7 +82,7 @@ const Login = () => {
           <label className="form-label fw-semibold d-flex">Password</label>
           <input
             type="password"
-            className="form-control rounded-pill"
+            className="form-control round-shape"
             placeholder="********"
             required
             value={password}
@@ -92,7 +92,7 @@ const Login = () => {
 
         <button
           type="submit"
-          className="btn btn-primary w-100 rounded-pill mt-3"
+          className="btn btn-primary w-100 round-shape mt-3"
           disabled={loading}
         >
           {loading ? (
