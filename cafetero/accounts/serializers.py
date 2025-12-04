@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
-from .models import User, Company, CompanyBranch, CompanyBuilding, Vendor, Employee, UserType
+from .models import User, Company, CompanyBranch, CompanyBuilding, Vendor, VendorBranch, Employee
 
 
 class LoginSerializer(serializers.Serializer):
@@ -37,76 +37,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("id", "email", "user_type", "is_active", "last_login", "created_at")
 
-
-class RegisterCompanySerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(write_only=True)
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = Company
-        fields = ("email", "password", "name", "domain", "logo", "bio", "location")
-
-    def create(self, validated_data):
-        email = validated_data.pop("email")
-        password = validated_data.pop("password")
-
-        user_type = UserType.objects.get(name="Company")
-
-        user = User.objects.create(
-            email=email,
-            password=make_password(password),
-            user_type=user_type
-        )
-        return Company.objects.create(user=user, **validated_data)
-
-
-class RegisterVendorSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(write_only=True)
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = Vendor
-        fields = ("email", "password", "name", "logo")
-
-    def create(self, validated_data):
-        email = validated_data.pop("email")
-        password = validated_data.pop("password")
-
-        user_type = UserType.objects.get(name="Vendor")
-
-        user = User.objects.create(
-            email=email,
-            password=make_password(password),
-            user_type=user_type
-        )
-        return Vendor.objects.create(user=user, **validated_data)
-
-
-class RegisterEmployeeSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(write_only=True)
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = Employee
-        fields = ("email", "password", "full_name", "employee_code", "company", "branch", "building")
-
-    def create(self, validated_data):
-        email = validated_data.pop("email")
-        password = validated_data.pop("password")
-
-        user_type = UserType.objects.get(name="Employee")
-
-        user = User.objects.create(
-            email=email,
-            password=make_password(password),
-            user_type=user_type
-        )
-
-        return Employee.objects.create(user=user, **validated_data)
-
 class CreateUserSerializer(serializers.Serializer):
     email = serializers.EmailField()
-
 
 class SetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -116,7 +48,6 @@ class SetPasswordSerializer(serializers.Serializer):
 class OTPVerifySerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField(max_length=6)
-
 
 class CompanyInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -134,3 +65,41 @@ class BuildingSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyBuilding
         fields = ["branch", "building_name", "floor_count"]
+
+class VendorInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = ["name", "logo"]
+
+
+class VendorBranchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VendorBranch
+        fields = ["branch_name", "city", "state", "address"]
+
+class EmployeeInfoSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(
+        queryset=Company.objects.all(),
+        required=True,
+        allow_null=False
+    )
+    branch = serializers.PrimaryKeyRelatedField(
+        queryset=CompanyBranch.objects.all(),
+        required=True,
+        allow_null=False
+    )
+    building = serializers.PrimaryKeyRelatedField(
+        queryset=CompanyBuilding.objects.all(),
+        required=True,
+        allow_null=False
+    )
+
+    class Meta:
+        model = Employee
+        fields = [
+            "full_name",
+            "company",
+            "branch",
+            "building",
+            "employee_code",
+        ]
