@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("admin@cafetero.com");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("vendor@c.co");
+  const [password, setPassword] = useState("@aqib1234");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -23,10 +23,10 @@ const Login = () => {
       localStorage.setItem("access", data.access);
       localStorage.setItem("refresh", data.refresh);
       localStorage.setItem("user-data", JSON.stringify(data.user));
-      
+
       console.log("✅ LOGIN SUCCESS:", data);
       console.log("👤 User Type:", data.user.user_type);
-      await new Promise(r => setTimeout(r, 200)); // allow logs
+      await new Promise((r) => setTimeout(r, 200)); // allow logs
 
       // Redirect based on user_type
       const userType = data.user.user_type;
@@ -37,13 +37,13 @@ const Login = () => {
           navigate("/admin");
           break;
         case "Company":
-          navigate("/company");
+          navigate("/company/dashboard");
           break;
         case "Vendor":
-          navigate("/vendor");
+          navigate("/vendor/dashboard");
           break;
-        case "Customer":
-          navigate("/customer");
+        case "Employee":
+          navigate("/employee/dashboard");
           break;
         case "Worker":
           navigate("/worker");
@@ -51,16 +51,18 @@ const Login = () => {
         default:
           navigate("/");
       }
-      
     } catch (err) {
-      console.log("ERROR:", err)
+      console.log("ERROR:", err);
       setError("Something went wrong");
     }
     setLoading(false);
   };
 
   return (
-    <div className="card shadow-lg p-4 bg-light" style={{ borderRadius: "16px" }}>
+    <div
+      className="card shadow-lg p-4 bg-light"
+      style={{ borderRadius: "16px" }}
+    >
       <h3 className="text-center mb-4 text-primary fw-bold">Cafetero Login</h3>
 
       {error && <div className="alert alert-danger text-center">{error}</div>}

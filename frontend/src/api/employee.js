@@ -13,7 +13,7 @@ export const createEmployeeUser = async (email) => {
 export const setEmployeePassword = async (email, password) => {
   const res = await fetch(`${BASE_URL}/set-password/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },  
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
   return res.json();
@@ -56,3 +56,13 @@ export const updateEmployee = async (data) => {
   });
   return res.json();
 };
+
+// Authorized routes:
+// src / api / employee.js;
+import api from "./axios";
+
+export const getEmployeeDashboard = () => api.get("/employee/dashboard/");
+export const getBuildingFloors = (buildingId) =>
+  api.get(`/employee/buildings/${buildingId}/floors/`);
+export const getFloorVendors = (floorId) =>
+  api.get(`/employee/floors/${floorId}/vendors/`);

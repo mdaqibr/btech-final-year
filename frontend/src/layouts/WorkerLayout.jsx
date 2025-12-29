@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 const links = [
   { path: "/worker/dashboard", label: "Dashboard" },
   { path: "/worker/tasks", label: "Tasks" },
-  { path: "/worker/feedback", label: "Feedback" }
+  { path: "/worker/feedback", label: "Feedback" },
 ];
 
 const WorkerLayout = ({ children }) => {

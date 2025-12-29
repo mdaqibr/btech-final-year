@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { Coffee, User, LogOut, Menu } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -21,23 +22,22 @@ const Navbar = ({ links }) => {
         borderBottom: "1px solid #eaeaea",
       }}
     >
-      <div className="container-fluid">
-        {/* Brand */}
-        <span className="navbar-brand fw-bold text-primary">
-          ☕ Cafetero
+      {/* SAME CONTAINER AS PAGE */}
+      <div className="container">
+        <span className="navbar-brand fw-bold text-primary d-flex align-items-center gap-2">
+          <Coffee size={20} />
+          Cafetero
         </span>
 
-        {/* Mobile Toggle */}
         <button
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarContent"
         >
-          <span className="navbar-toggler-icon"></span>
+          <Menu size={20} />
         </button>
 
-        {/* Menu Links */}
         <div className="collapse navbar-collapse" id="navbarContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             {links.map((link) => (
@@ -45,9 +45,10 @@ const Navbar = ({ links }) => {
                 <NavLink
                   to={link.path}
                   className={({ isActive }) =>
-                    `nav-link px-3 rounded ${isActive ? "bg-primary text-white fw-semibold" : ""}`
+                    `nav-link px-3 rounded ${
+                      isActive ? "bg-primary text-white fw-semibold" : ""
+                    }`
                   }
-                  style={{ marginRight: "6px" }}
                 >
                   {link.label}
                 </NavLink>
@@ -55,24 +56,27 @@ const Navbar = ({ links }) => {
             ))}
           </ul>
 
-          {/* User Section */}
           <div className="dropdown">
             <button
-              className="btn btn-outline-primary dropdown-toggle"
+              className="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
               data-bs-toggle="dropdown"
             >
-              👤 {user.email?.split("@")[0] || "User"}
+              <User size={16} />
+              {user.email?.split("@")[0] || "User"}
             </button>
 
             <ul className="dropdown-menu dropdown-menu-end shadow">
               <li>
-                <button className="dropdown-item text-danger" onClick={handleLogout}>
-                  🚪 Logout
+                <button
+                  className="dropdown-item text-danger d-flex align-items-center gap-2"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={16} />
+                  Logout
                 </button>
               </li>
             </ul>
           </div>
-
         </div>
       </div>
     </nav>

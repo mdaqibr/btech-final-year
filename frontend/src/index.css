@@ -66,3 +66,53 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* ---------- CARD BASE ---------- */
+.vendor-card {
+  background: #f9fafb;
+  border-radius: 14px;
+  position: relative;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+/* LEFT ACCENT BORDER */
+.vendor-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 6px;
+  background: linear-gradient(180deg, #6366f1, #22c55e);
+  border-radius: 0 12px 12px 0;
+  transition: all 0.25s ease;
+}
+
+/* HOVER EFFECT */
+.vendor-card:hover {
+  background: #ffffff;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.vendor-card:hover::before {
+  opacity: 0;
+}
+
+/* ---------- SKELETON ---------- */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}

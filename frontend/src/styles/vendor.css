@@ -13,11 +13,11 @@
 }
 
 .vendor-cta {
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .btn-purple {
-  background: linear-gradient(90deg,#6f42c1,#7b61d5);
+  background: linear-gradient(90deg, #6f42c1, #7b61d5);
   color: #fff;
   border: none;
 }
@@ -25,8 +25,73 @@
   border: 1px solid #9b76e6;
   color: #6f42c1;
 }
-.rounded-start-round-shape { border-top-left-radius: 50px; border-bottom-left-radius: 50px; }
-.rounded-end-round-shape { border-top-right-radius: 50px; border-bottom-right-radius: 50px; }
-.round-shape { border-radius: 50px; }
-.small-muted { color: #7b6b9a; font-size: 0.9rem; }
-.alert-round-shape { border-radius: 999px; padding: 0.45rem 0.75rem; }
+.rounded-start-round-shape {
+  border-top-left-radius: 50px;
+  border-bottom-left-radius: 50px;
+}
+.rounded-end-round-shape {
+  border-top-right-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+.round-shape {
+  border-radius: 50px;
+}
+.small-muted {
+  color: #7b6b9a;
+  font-size: 0.9rem;
+}
+.alert-round-shape {
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+}
+
+/* ---------- DASHBOARD ---------- */
+/* ---------- CARD BASE ---------- */
+.vendor-card {
+  background: #f9fafb;
+  border-radius: 14px;
+  position: relative;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+
+/* LEFT ACCENT BORDER */
+.vendor-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  height: 80%;
+  width: 6px;
+  background: linear-gradient(180deg, #6366f1, #22c55e);
+  border-radius: 0 12px 12px 0;
+  transition: all 0.25s ease;
+}
+
+/* HOVER EFFECT */
+.vendor-card:hover {
+  background: #ffffff;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.vendor-card:hover::before {
+  opacity: 0;
+}
+
+/* ---------- SKELETON ---------- */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}

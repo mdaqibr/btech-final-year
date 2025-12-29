@@ -3,10 +3,10 @@ import Navbar from "../components/Navbar";
 import { Outlet } from "react-router-dom";
 
 const links = [
-  { path: "/company/dashboard", label: "Dashboard" },
-  { path: "/company/vendors", label: "Vendors" },
-  { path: "/company/customers", label: "Customers" },
-  { path: "/company/reports", label: "Reports" }
+  // { path: "/company/dashboard", label: "Dashboard" },
+  // { path: "/company/vendors", label: "Vendors" },
+  // { path: "/company/customers", label: "Customers" },
+  // { path: "/company/reports", label: "Reports" }
 ];
 
 const CompanyLayout = () => {

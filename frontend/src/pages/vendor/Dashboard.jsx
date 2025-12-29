@@ -1,12 +1,19 @@
-import React from "react";
+// src/pages/vendor/Dashboard.jsx
+import VendorBranches from "./sections/VendorBranches";
+import VendorRequests from "./sections/VendorRequests";
+import VendorWorkers from "./sections/VendorWorkers";
+import VendorStats from "./sections/VendorStats";
 
-const CustomerDashboard = () => {
+const VendorDashboard = () => {
+  console.log("Vendor dashboard.");
   return (
-    <div>
-      <h1>Customer Dashboard</h1>
-      <p>Welcome, Customer!</p>
+    <div className="container mt-4">
+      <VendorStats />
+      <VendorBranches />
+      <VendorRequests />
+      <VendorWorkers />
     </div>
   );
 };
 
-export default CustomerDashboard;   // ✅ this line is required
+export default VendorDashboard;

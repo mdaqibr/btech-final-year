@@ -5,7 +5,14 @@ import AuthHeader from "../../../components/AuthHeader";
 import AlreadyHaveAccount from "../../../components/AllreadyHaveAccount.jsx";
 import { Loader2, XCircle, Mail, Globe } from "lucide-react";
 
-const Step1Email = ({ onNext, setEmail, email, country, setCountry, theme }) => {
+const Step1Email = ({
+  onNext,
+  setEmail,
+  email,
+  country,
+  setCountry,
+  theme,
+}) => {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
 
@@ -32,7 +39,10 @@ const Step1Email = ({ onNext, setEmail, email, country, setCountry, theme }) => 
       if (res.success) {
         onNext();
       } else {
-        showMessage("error", res.message || "Unable to continue. Please try again.");
+        showMessage(
+          "error",
+          res.message || "Unable to continue. Please try again."
+        );
       }
     } catch (err) {
       showMessage("error", "Something went wrong. Please try again.");
@@ -71,11 +81,17 @@ const Step1Email = ({ onNext, setEmail, email, country, setCountry, theme }) => 
 
       <form onSubmit={handleSubmit}>
         {/* Email */}
-        <label className="form-label fw-semibold" style={{ color: theme.text.body }}>
+        <label
+          className="form-label fw-semibold"
+          style={{ color: theme.text.body }}
+        >
           Admin Email
         </label>
         <div className="input-group mb-3">
-          <span className="input-group-text" style={{ backgroundColor: "#F3F4F6", color: theme.text.body }}>
+          <span
+            className="input-group-text"
+            style={{ backgroundColor: "#F3F4F6", color: theme.text.body }}
+          >
             <Mail size={18} />
           </span>
           <input
@@ -93,11 +109,17 @@ const Step1Email = ({ onNext, setEmail, email, country, setCountry, theme }) => 
         </div>
 
         {/* Country */}
-        <label className="form-label fw-semibold" style={{ color: theme.text.body }}>
+        <label
+          className="form-label fw-semibold"
+          style={{ color: theme.text.body }}
+        >
           Company Registered In
         </label>
         <div className="input-group mb-4">
-          <span className="input-group-text" style={{ backgroundColor: "#F3F4F6", color: theme.text.body }}>
+          <span
+            className="input-group-text"
+            style={{ backgroundColor: "#F3F4F6", color: theme.text.body }}
+          >
             <Globe size={18} />
           </span>
           <select
@@ -127,7 +149,7 @@ const Step1Email = ({ onNext, setEmail, email, country, setCountry, theme }) => 
           {loading ? <Loader2 size={18} className="spin" /> : "Continue →"}
         </button>
       </form>
-      
+
       <AlreadyHaveAccount onLogin={() => navigate("/login")} />
 
       <style>{`
