@@ -1,3 +1,6 @@
+# accounts/views/auth.py
+from rest_framework.permissions import AllowAny
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,10 +21,11 @@ from accounts.serializers import (
 )
 from accounts.models import User, Company, UserType, CompanyBranch, CompanyBuilding, Vendor, Employee
 from accounts.services.otp_service import create_or_update_otp, verify_otp
-from accounts.services.email_service import send_otp_email
+from accounts.services.email.otp_email import send_otp_email
 
 # LOGIN
 class LoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         print("request-data: ", request.data)
         serializer = LoginSerializer(data=request.data)
@@ -40,7 +44,7 @@ def api_response(success, message, data=None, status_code=200):
     return Response({"success": success, "message": message, "data": data}, status=status_code)
 
 class RegisterCompanyUser(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             print("request.data: ", request.data)
@@ -64,7 +68,7 @@ class RegisterCompanyUser(APIView):
             return api_response(False, str(e), status_code=400)
 
 class SetPassword(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = SetPasswordSerializer(data=request.data)
@@ -87,7 +91,7 @@ class SetPassword(APIView):
             return api_response(False, str(e), status_code=400)
 
 class SendOTP(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -100,16 +104,15 @@ class SendOTP(APIView):
                 return api_response(False, "User not found", status_code=404)
 
             otp = create_or_update_otp(email)
-            send_otp_email(email, otp)
+            send_otp_email(email=email, otp=otp)
 
             return api_response(True, "OTP sent successfully")
 
         except Exception as e:
             return api_response(False, str(e), status_code=400)
 
-
 class VerifyOTP(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             print("request.data: ", request.data)
@@ -129,7 +132,7 @@ class VerifyOTP(APIView):
             return api_response(False, str(e), status_code=400)
 
 class UpdateCompanyInfo(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             print("request.data > ", request.data)
@@ -160,7 +163,7 @@ class UpdateCompanyInfo(APIView):
 
 
 class AddBranchesAndBuildings(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             data = request.data
@@ -215,7 +218,7 @@ class AddBranchesAndBuildings(APIView):
 
 # For vendor registration
 class RegisterVendorUser(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = CreateUserSerializer(data=request.data)
@@ -240,7 +243,7 @@ class RegisterVendorUser(APIView):
             return api_response(False, str(e), 400)
 
 class VendorSetPassword(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = SetPasswordSerializer(data=request.data)
@@ -263,7 +266,7 @@ class VendorSetPassword(APIView):
             return api_response(False, str(e), 400)
 
 class VendorSendOTP(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -276,7 +279,7 @@ class VendorSendOTP(APIView):
                 return api_response(False, "Vendor user not found", 404)
 
             otp = create_or_update_otp(email)
-            send_otp_email(email, otp)
+            send_otp_email(email=email, otp=otp)
 
             return api_response(True, "OTP sent successfully")
 
@@ -284,7 +287,7 @@ class VendorSendOTP(APIView):
             return api_response(False, str(e), 400)
 
 class VendorVerifyOTP(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = OTPVerifySerializer(data=request.data)
@@ -303,7 +306,7 @@ class VendorVerifyOTP(APIView):
             return api_response(False, str(e), 400)
 
 class UpdateVendorInfo(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -329,7 +332,7 @@ class UpdateVendorInfo(APIView):
             return api_response(False, str(e), 400)
 
 class AddVendorBranches(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             data = request.data
@@ -363,7 +366,7 @@ class AddVendorBranches(APIView):
             return api_response(False, str(e), 400)
 
 class RegisterEmployeeUser(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = CreateUserSerializer(data=request.data)
@@ -388,7 +391,7 @@ class RegisterEmployeeUser(APIView):
             return api_response(False, str(e), 400)
 
 class EmployeeSetPassword(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = SetPasswordSerializer(data=request.data)
@@ -411,7 +414,7 @@ class EmployeeSetPassword(APIView):
             return api_response(False, str(e), 400)
 
 class EmployeeSendOTP(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             email = request.data.get("email")
@@ -424,7 +427,7 @@ class EmployeeSendOTP(APIView):
                 return api_response(False, "Employee user not found", 404)
 
             otp = create_or_update_otp(email)
-            send_otp_email(email, otp)
+            send_otp_email(email=email, otp=otp)
 
             return api_response(True, "OTP sent successfully")
 
@@ -432,7 +435,7 @@ class EmployeeSendOTP(APIView):
             return api_response(False, str(e), 400)
 
 class EmployeeVerifyOTP(APIView):
-
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             ser = OTPVerifySerializer(data=request.data)
@@ -451,6 +454,7 @@ class EmployeeVerifyOTP(APIView):
             return api_response(False, str(e), 400)
 
 class UpdateEmployeeInfo(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         try:
             print("request.data>>: ", request.data)
@@ -558,18 +562,21 @@ class UpdateEmployeeInfo(APIView):
 
 
 class GetCompanies(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         companies = Company.objects.all().values("id", "name")
         return api_response(True, "OK", list(companies), 200)
 
 
 class GetBranches(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, company_id):
         branches = CompanyBranch.objects.filter(company_id=company_id).values("id", "branch_name")
         return api_response(True, "OK", list(branches), 200)
 
 
 class GetBuildings(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, branch_id):
         buildings = CompanyBuilding.objects.filter(branch_id=branch_id).values("id", "building_name")
         return api_response(True, "OK", list(buildings), 200)

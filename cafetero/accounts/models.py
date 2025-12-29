@@ -1,3 +1,4 @@
+# accounts/models.py
 from django.db import models
 from common.models import BaseModel
 from django.utils import timezone
@@ -25,7 +26,7 @@ class User(BaseModel):
         ]
 
     def __str__(self):
-        return self.email
+        return f"{self.id}-{self.email}"
 
 class Company(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -41,6 +42,9 @@ class Company(BaseModel):
             models.Index(fields=['name']),
             models.Index(fields=['domain']),
         ]
+
+    def __str__(self):
+        return f"{self.name}-{self.domain}"
 
 
 class CompanyBranch(BaseModel):
@@ -59,6 +63,9 @@ class CompanyBranch(BaseModel):
             models.Index(fields=['state']),
         ]
 
+    def __str__(self):
+        return f"{self.branch_name}"
+
 class CompanyBuilding(BaseModel):
     branch = models.ForeignKey(CompanyBranch, on_delete=models.CASCADE)
     building_name = models.CharField(max_length=255)
@@ -69,6 +76,24 @@ class CompanyBuilding(BaseModel):
         indexes = [
             models.Index(fields=['branch']),
         ]
+
+    def __str__(self):
+        return f"{self.building_name}"
+
+class CompanyFloor(BaseModel):
+    building = models.ForeignKey(CompanyBuilding, on_delete=models.CASCADE)
+    floor_name = models.CharField(max_length=255)   # e.g. "1st Floor"
+    floor_number = models.IntegerField()
+
+    class Meta:
+        db_table = "company_floor"
+        indexes = [
+            models.Index(fields=['building']),
+            models.Index(fields=['floor_number']),
+        ]
+
+    def __str__(self):
+        return f"{self.floor_name}-{self.floor_number}"
 
 class Vendor(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -81,6 +106,9 @@ class Vendor(BaseModel):
         indexes = [
             models.Index(fields=['name']),
         ]
+
+    def __str__(self):
+        return f"{self.name}"
 
 class VendorBranch(BaseModel):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
@@ -97,6 +125,9 @@ class VendorBranch(BaseModel):
             models.Index(fields=['city']),
             models.Index(fields=['state']),
         ]
+
+    def __str__(self):
+        return f"{self.branch_name}"
 
 class Employee(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -115,6 +146,8 @@ class Employee(BaseModel):
             models.Index(fields=['company']),
         ]
 
+    def __str__(self):
+        return f"{self.full_name}"
 
 class EmailOTP(BaseModel):
     email = models.EmailField()

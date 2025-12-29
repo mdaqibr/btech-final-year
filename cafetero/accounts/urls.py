@@ -1,3 +1,4 @@
+# accounts/urls.py
 from django.urls import path
 from accounts import views
 
@@ -30,4 +31,45 @@ urlpatterns = [
     path("companies/", views.GetCompanies.as_view()),
     path("companies/<int:company_id>/branches/", views.GetBranches.as_view()),
     path("branches/<int:branch_id>/buildings/", views.GetBuildings.as_view()),
+
+        # ================= PROTECTED COMPANY APIs =================
+    path("companies/branches/", views.GetCompanyBranches.as_view()),
+    path("companies/add-branches/", views.AddCompanyBranches.as_view()),
+    path("companies/branches/<int:branch_id>/buildings/", views.CompanyBranchBuildingsView.as_view(), name="company-branch-buildings"),
+
+    path(
+    "companies/branches/<int:branch_id>/buildings/<int:building_id>/floors/",
+    views.CompanyBuildingFloorsView.as_view(),
+    name="company-building-floors"),
+
+    path(
+    "companies/branches/<int:branch_id>/buildings/<int:building_id>/floors/<int:floor_id>/vendors/",
+    views.FloorVendorsView.as_view(),
+    name="floor-vendors",),
+
+    path("vendors/", views.VendorListView.as_view(), name="vendors-list"),
+
+    path("vendors/<int:vendor_id>/", views.VendorDetailView.as_view()),
+
+    path("company/floors/options/", views.CompanyFloorOptionsAPIView.as_view()),
+
+    path("company/vendors/request/", views.CompanyVendorRequestAPIView.as_view()),
+    
+    
+    # ==========================VENDOR==================================
+    # Dashboard
+    path("vendor/dashboard/stats/", views.VendorDashboardStatsAPIView.as_view()),
+
+    # Vendor branches
+    path("vendor/branches/", views.VendorBranchListAPIView.as_view()),
+
+    # Company onboard requests
+    path("vendor/company/requests/", views.VendorOnboardRequestListAPIView.as_view()),
+    path(
+        "vendor/company/requests/<int:pk>/",
+        views.VendorOnboardActionAPIView.as_view(),
+    ),
+
+    # Workers
+    path("vendor/workers/", views.VendorWorkerListAPIView.as_view()),
 ]
