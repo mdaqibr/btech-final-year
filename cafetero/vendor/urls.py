@@ -8,4 +8,5 @@ urlpatterns = [
     path("workers/", views.VendorWorkerListCreateAPIView.as_view()),
     path("workers/<int:pk>/", views.VendorWorkerRetrieveUpdateDestroyAPIView.as_view()),
     path("approved-floors/", views.VendorApprovedFloorAPIView.as_view()),
+    path("onboarded-structure/", views.VendorOnboardedStructureAPIView.as_view()),
 ]

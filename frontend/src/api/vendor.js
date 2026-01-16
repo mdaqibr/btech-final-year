@@ -103,6 +103,9 @@ export const updateVendorWorker = (id, data) =>
 export const deleteVendorWorker = (id) => api.delete(`vendor/workers/${id}/`);
 export const getApprovedFloors = () => api.get("vendor/approved-floors/");
 
+export const getVendorOnboardedStructure = (vendorBranchId) =>
+  api.get(`/vendor/onboarded-structure/?vendor_branch_id=${vendorBranchId}`);
+
 // Manage foods
 export const getVendorFoods = () => api.get("menu/vendor/foods/");
 export const createVendorFood = (data) => api.post("menu/vendor/foods/", data);
@@ -119,17 +122,12 @@ export const updateBranchFood = (id, payload) =>
   api.patch(`menu/vendor-branch-food/${id}/`, payload);
 export const removeFoodFromBranch = (id) =>
   api.delete(`menu/vendor-branch-food/${id}/`);
+export const getBranchFoods = (branchId) =>
+  api.get(`menu/vendor/branches/${branchId}/foods/`);
 
 export const getSpecialFoods = (bid) => api.get(`menu/special-foods/${bid}/`);
 export const deleteSpecialFood = (id) =>
   api.delete(`menu/special-foods/item/${id}/`);
-
-// not used
-export const getBranchFoodsNotAssigned = (floorId) =>
-  api.get(`vendor/floors/${floorId}/available-foods/`);
-
-export const deleteFloorFood = (floorFoodId) =>
-  api.delete(`vendor/floor-foods/${floorFoodId}/`);
 
 export const getBranchFloorFoods = (floorId) =>
   api.get(`menu/floor-foods/${floorId}/`);
@@ -138,6 +136,3 @@ export const assignFoodToFloor = (floorId, payload) =>
 export const updateFloorFood = (id, payload) =>
   api.patch(`menu/floor-food/${id}/`, payload);
 export const removeFoodFromFloor = (id) => api.delete(`menu/floor-food/${id}/`);
-
-export const getBranchFoods = (branchId) =>
-  api.get(`menu/vendor/branches/${branchId}/foods/`);

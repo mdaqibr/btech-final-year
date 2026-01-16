@@ -1,0 +1,254 @@
+{
+  "info": {
+    "name": "Company Food System API",
+    "_postman_id": "3415f63b-d071-4cbe-b884-9b45af0fcfe1",
+    "description": "Postman collection for all DRF API endpoints (APIView) for Company Food Ordering System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+
+    {
+      "name": "FoodItem",
+      "item": [
+        {
+          "name": "List Food Items",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/food/" }
+        },
+        {
+          "name": "Create Food Item",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Biriyani\",\n  \"description\": \"Spicy chicken biriyani\",\n  \"default_price\": 120\n}"
+            },
+            "url": "{{BASE_URL}}/api/food/"
+          }
+        },
+        {
+          "name": "Retrieve Food Item",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/food/:id/" }
+        },
+        {
+          "name": "Update Food Item",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/food/:id/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Biriyani\",\n  \"description\": \"Updated description\",\n  \"default_price\": 150\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Food Item",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/food/:id/" }
+        }
+      ]
+    },
+
+    {
+      "name": "BuildingFoodItem",
+      "item": [
+        {
+          "name": "List Building-Food Items",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/building-food/" }
+        },
+        {
+          "name": "Create Building-Food Mapping",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/building-food/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"food\": 1,\n  \"vendor_branch\": 2,\n  \"building\": 3,\n  \"price\": 140,\n  \"display_name\": \"Chicken Biriyani - Premium\",\n  \"availability\": true,\n  \"daily_quantity\": 100\n}"
+            }
+          }
+        },
+        {
+          "name": "Retrieve Building-Food",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/building-food/:id/" }
+        },
+        {
+          "name": "Update Building-Food",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/building-food/:id/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 150,\n  \"availability\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Building-Food",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/building-food/:id/" }
+        }
+      ]
+    },
+
+    {
+      "name": "DailyMenu",
+      "item": [
+        {
+          "name": "List Menus",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/menus/" }
+        },
+        {
+          "name": "Create Menu",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/menus/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vendor_branch\": 2,\n  \"building\": 3,\n  \"date\": \"2025-01-15\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Retrieve Menu",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/menus/:id/" }
+        },
+        {
+          "name": "Delete Menu",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/menus/:id/" }
+        }
+      ]
+    },
+
+    {
+      "name": "DailyMenuItem",
+      "item": [
+        {
+          "name": "List Menu Items",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/menu-items/" }
+        },
+        {
+          "name": "Create Menu Item",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/menu-items/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"menu\": 1,\n  \"building_food\": 4,\n  \"is_special\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Retrieve Menu Item",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/menu-items/:id/" }
+        },
+        {
+          "name": "Update Menu Item",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/menu-items/:id/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_special\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Menu Item",
+          "request": { "method": "DELETE", "url": "{{BASE_URL}}/api/menu-items/:id/" }
+        }
+      ]
+    },
+
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/orders/" }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/orders/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": 10,\n  \"building\": 3,\n  \"items\": [\n    {\"building_food\": 4, \"quantity\": 2},\n    {\"building_food\": 5, \"quantity\": 1}\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Retrieve Order",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/orders/:id/" }
+        }
+      ]
+    },
+
+    {
+      "name": "Ratings",
+      "item": [
+        {
+          "name": "Submit Rating",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/ratings/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_item\": 1,\n  \"rating\": 4,\n  \"review\": \"Good food and fast delivery\"\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Guest Meals",
+      "item": [
+        {
+          "name": "List Guest Meals",
+          "request": { "method": "GET", "url": "{{BASE_URL}}/api/guest-meals/" }
+        },
+        {
+          "name": "Create Guest Meal",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{BASE_URL}}/api/guest-meals/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"host_user\": 10,\n  \"guest_name\": \"John Doe\",\n  \"building_food\": 4\n}"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Utility Endpoints",
+      "item": [
+        {
+          "name": "Today's Menu by Building",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/api/menu/today/?building=3"
+          }
+        },
+        {
+          "name": "Special Foods for Today",
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/api/menu/today/special/?building=3"
+          }
+        }
+      ]
+    }
+
+  ]
+}
+

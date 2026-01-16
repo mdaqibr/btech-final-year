@@ -8,9 +8,11 @@ const Navbar = ({ links }) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user-data") || "{}");
 
+  const loginUrl = user?.user_type === "worker" ? "/worker-login" : "/login";
+
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");
+    navigate(loginUrl);
   };
 
   return (
@@ -62,7 +64,7 @@ const Navbar = ({ links }) => {
               data-bs-toggle="dropdown"
             >
               <User size={16} />
-              {user.email?.split("@")[0] || "User"}
+              {user.email?.split("@")[0] || user.name || "User"}
             </button>
 
             <ul className="dropdown-menu dropdown-menu-end shadow">

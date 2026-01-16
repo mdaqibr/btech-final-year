@@ -26,7 +26,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s+@#_qzrn#x4bq9w%r%=ywgw@lt4gikkt=c-=uu#$95x3fy!#-'
+SERVICE_SECRET='22CeW32CeW3pIq24xZbe55Kt1v4HmgpIq24xZbe55Kt1v4HmgCeW3pIq242CeW3pIq24xZbe55Kt1v4HmgxZbe55Kt1v4Hmg'
 
+PAYMENT_SERVICE_URL='http://localhost:5000'
+PAYMENT_SERVICE_TOKEN='ZZbe55Kt1v4Hmgbe55KZbe55Kt1v4Hmgt1v4Zbe55Kt1v4HmgHmg'
+RAZORPAY_WEBHOOK_TOKEN='t1v4Hmgt1v4Zbet1v4Hmgt1v4Zbe55Kt1v4HmgHmg55Kt1v4HmgHmg'
+RAZORPAY_KEY_SECRET='T8v6ZgFc1t4RFOfARoCPUOwA'
+
+NGROK_TOKEN='387NOFXE5uObJDiS8gdE53xBGUo_6EMF1x5Q11qgv8pdMXUT9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -69,6 +76,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://192.168.80.142:5173",
+    "https://dentilabial-noel-improbably.ngrok-free.dev"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -78,7 +87,7 @@ CORS_ALLOW_HEADERS = [
     "authorization",
 ]
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "dentilabial-noel-improbably.ngrok-free.dev"]
 
 ROOT_URLCONF = 'core.urls'
 # AUTH_USER_MODEL = "accounts.User"
@@ -153,7 +162,8 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "accounts.jwt_backend.CustomJWTAuthentication",
+        "accounts.authentication.AppJWTAuthentication",
+        "worker.authentication.WorkerJWTAuthentication",
     )
 }
 

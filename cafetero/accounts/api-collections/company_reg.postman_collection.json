@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Company Registration APIs",
+    "_postman_id": "12345678-abcd-efgh-ijkl-1234567890ab",
+    "description": "APIs for creating users, setting passwords, sending OTP, verifying OTP, updating company, adding branches and buildings",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\"\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/create-user/", "host": ["{{base_url}}"], "path": ["company","register","create-user"]}
+      }
+    },
+    {
+      "name": "Set Password",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"NewPassword123!\"\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/set-password/", "host": ["{{base_url}}"], "path": ["company","register","set-password"]}
+      }
+    },
+    {
+      "name": "Send OTP",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\"\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/send-otp/", "host": ["{{base_url}}"], "path": ["company","register","send-otp"]}
+      }
+    },
+    {
+      "name": "Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/verify-otp/", "host": ["{{base_url}}"], "path": ["company","register","verify-otp"]}
+      }
+    },
+    {
+      "name": "Update Company Info",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@example.com\",\n  \"name\": \"Example Company\",\n  \"website\": \"https://example.com\"\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/update-company/", "host": ["{{base_url}}"], "path": ["company","register","update-company"]}
+      }
+    },
+    {
+      "name": "Add Branch",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"company_id\": 1,\n  \"name\": \"Branch 1\",\n  \"location\": \"City Center\"\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/add-branches/", "host": ["{{base_url}}"], "path": ["company","register","add-branches"]}
+      }
+    },
+    {
+      "name": "Add Building",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"branch_id\": 1,\n  \"name\": \"Building A\",\n  \"floors\": 5\n}"
+        },
+        "url": {"raw": "{{base_url}}/company/register/add-buildings/", "host": ["{{base_url}}"], "path": ["company","register","add-buildings"]}
+      }
+    }
+  ]
+}

@@ -1,14 +1,16 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 const envSchema = Joi.object({
   PORT: Joi.number().default(5000),
-  NODE_ENV: Joi.string().valid('development','production','test').default('development'),
+  NODE_ENV: Joi.string()
+    .valid("development", "production", "test")
+    .default("development"),
   RAZORPAY_KEY_ID: Joi.string().required(),
   RAZORPAY_KEY_SECRET: Joi.string().required(),
   WEBHOOK_SECRET: Joi.string().required(),
   RATE_LIMIT_WINDOW_MS: Joi.number().default(60000),
   RATE_LIMIT_MAX: Joi.number().default(100),
-  ALLOWED_ORIGINS: Joi.any().default('*')
+  ALLOWED_ORIGINS: Joi.any().default("*"),
 }).unknown();
 
 const { value: env, error } = envSchema.validate(process.env);
@@ -24,7 +26,10 @@ const config = {
   WEBHOOK_SECRET: env.WEBHOOK_SECRET,
   RATE_LIMIT_WINDOW_MS: Number(env.RATE_LIMIT_WINDOW_MS),
   RATE_LIMIT_MAX: Number(env.RATE_LIMIT_MAX),
-  ALLOWED_ORIGINS: env.ALLOWED_ORIGINS === '*' ? '*' : String(env.ALLOWED_ORIGINS).split(','),
+  ALLOWED_ORIGINS:
+    env.ALLOWED_ORIGINS === "*" ? "*" : String(env.ALLOWED_ORIGINS).split(","),
+  CAFETERO_SECRET: env.CAFETERO_SECRET,
+  SECRET_KEY: env.SECRET_KEY,
 };
 
 export default config;

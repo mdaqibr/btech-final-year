@@ -17,10 +17,14 @@ import EmployeeRegister from "./pages/employee/EmployeeRegister";
 import EmpBuildingFloors from "./pages/employee/BuildingFloors";
 import EmpFloorVendors from "./pages/employee/FloorVendors";
 import VendorMenu from "./pages/employee/VendorMenu";
+import TodayMenuItems from "./pages/employee/TodayMenuItems";
+import YourCart from "./pages/employee/YourCart";
+import YourOrders from "./pages/employee/YourOrders";
 
 /* Public pages */
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import WorkerLogin from "./pages/WorkerLogin";
 
 /* Dashboards */
 import VendorDashboard from "./pages/vendor/Dashboard";
@@ -48,7 +52,11 @@ import VendorRequests from "./pages/vendor/sections/VendorRequests";
 import WorkersPage from "./pages/vendor/Workers";
 import BranchesPage from "./pages/vendor/BranchesPage";
 import VendorFoods from "./pages/vendor/foods/VendorFoods";
+import FloorFoodSetup from "./pages/vendor/FloorFoodSetup";
 import VendorBranchDetails from "./pages/vendor/branches/VendorBranchDetails";
+
+// WORKER
+import TodayOrders from "./pages/worker/TodayOrders";
 
 function App() {
   const { isAuthenticated, user } = getAuthUser();
@@ -89,6 +97,7 @@ function App() {
           }
         />
       </Route>
+      <Route path="/worker-login" element={<WorkerLogin />} />
 
       {/* ---------- COMPANY ROUTES (GROUPED) ---------- */}
       <Route
@@ -160,6 +169,7 @@ function App() {
         <Route path="workers" element={<WorkersPage />} />
         <Route path="foods" element={<VendorFoods />} />
         <Route path="branches/:branchId" element={<VendorBranchDetails />} />
+        <Route path="floor/:id/set-up" element={<FloorFoodSetup />} />
       </Route>
 
       {/* ---------- CUSTOMER ---------- */}
@@ -175,9 +185,15 @@ function App() {
         <Route path=":buildingId/floors" element={<EmpBuildingFloors />} />
         <Route path="floors/:floorId/vendors" element={<EmpFloorVendors />} />
         <Route
-          path="floors/:floorId/vendors/:vendorId/menu"
+          path="floors/:floorId/vendors/:vendorBranchId/menu"
           element={<VendorMenu />}
         />
+        <Route
+          path="floors/:floorId/vendors/:vendorBranchId/today-menu/:foodType"
+          element={<TodayMenuItems />}
+        />
+        <Route path="your-cart" element={<YourCart />} />
+        <Route path="your-orders" element={<YourOrders />} />
       </Route>
 
       {/* ---------- WORKER ---------- */}
@@ -190,6 +206,7 @@ function App() {
         }
       >
         <Route path="dashboard" element={<WorkerDashboard />} />
+        <Route path="today-orders" element={<TodayOrders />} />;
       </Route>
 
       {/* ---------- FALLBACK ---------- */}

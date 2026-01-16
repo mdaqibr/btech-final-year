@@ -1,8 +1,9 @@
+// src / pages / employee / VendorMenu.jsx;
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Coffee, Utensils, Cookie, Star } from "lucide-react";
+import { ArrowLeft, Coffee, Utensils, Cookie, Star, Moon } from "lucide-react";
 
 export default function VendorMenu() {
-  const { vendorId } = useParams();
+  const { floorId, vendorBranchId } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -41,12 +42,40 @@ export default function VendorMenu() {
       {/* MEALS */}
       <div className="row g-4">
         {[
-          { name: "Breakfast", icon: <Coffee />, color: "bg-warning-subtle" },
-          { name: "Lunch", icon: <Utensils />, color: "bg-success-subtle" },
-          { name: "Evening Snacks", icon: <Cookie />, color: "bg-info-subtle" },
+          {
+            key: "breakfast",
+            name: "Breakfast",
+            icon: <Coffee />,
+            color: "bg-warning-subtle",
+          },
+          {
+            key: "lunch",
+            name: "Lunch",
+            icon: <Utensils />,
+            color: "bg-success-subtle",
+          },
+          {
+            key: "evening_snacks",
+            name: "Evening Snacks",
+            icon: <Cookie />,
+            color: "bg-info-subtle",
+          },
+          {
+            key: "dinner",
+            name: "Dinner",
+            icon: <Moon />,
+            color: "bg-info-subtle",
+          },
         ].map((m, i) => (
-          <div key={i} className="col-12 col-md-4">
-            <div className={`card border-0 shadow-sm ${m.color}`}>
+          <div key={m.key} className="col-12 col-md-4">
+            <div
+              className={`card border-0 shadow-sm ${m.color}`}
+              onClick={() =>
+                navigate(
+                  `/employee/floors/${floorId}/vendors/${vendorBranchId}/today-menu/${m.key}`
+                )
+              }
+            >
               <div className="card-body text-center">
                 <div className="bg-white rounded-circle d-inline-flex p-3 shadow-sm mb-2">
                   {m.icon}

@@ -83,36 +83,16 @@ export default function VendorBranchDetails() {
 
         <button
           className={`btn btn-sm ${
-            tab === "floors" ? "btn-primary" : "btn-light"
+            tab === "companies" ? "btn-primary" : "btn-light"
           }`}
-          onClick={() => setTab("floors")}
+          onClick={() => setTab("companies")}
         >
-          <Layers size={14} /> Floors
-        </button>
-
-        <button
-          className={`btn btn-sm ${
-            tab === "Today Menu" ? "btn-primary" : "btn-light"
-          }`}
-          onClick={() => setTab("Today Menu")}
-        >
-          <Menu size={14} /> Today Menu
-        </button>
-
-        <button
-          className={`btn btn-sm ${
-            tab === "special" ? "btn-primary" : "btn-light"
-          }`}
-          onClick={() => setTab("special")}
-        >
-          <Sparkles size={14} /> Special Foods
+          <Layers size={14} /> Companies
         </button>
       </div>
 
       {tab === "foods" && <BranchFoods branchId={branchId} />}
-      {tab === "floors" && <BranchFloors branchId={branchId} />}
-      {tab === "Today Menu" && <TodayMenu branchId={branchId} />}
-      {tab === "special" && <BranchSpecialFoods branchId={branchId} />}
+      {tab === "companies" && <BranchFloors branchId={branchId} />}
     </div>
   );
 }

@@ -66,3 +66,18 @@ export const getBuildingFloors = (buildingId) =>
   api.get(`/employee/buildings/${buildingId}/floors/`);
 export const getFloorVendors = (floorId) =>
   api.get(`/employee/floors/${floorId}/vendors/`);
+
+export const getEmployeeTodayMenu = (
+  floor,
+  vendor_branch,
+  food_type,
+  search = ""
+) =>
+  api.get(`/menu/employee/today-menu/`, {
+    params: {
+      floor,
+      vendor_branch,
+      food_type,
+      search,
+    },
+  });

@@ -1,12 +1,20 @@
-import Razorpay from 'razorpay';
-import config from '../config/index.js';
-import logger from '../config/logger.js';
+import Razorpay from "razorpay";
+import config from "../config/index.js";
+import logger from "../config/logger.js";
 
+if (!config.RAZORPAY_KEY_ID || !config.RAZORPAY_KEY_SECRET) {
+  console.log("❌ Razorpay keys missing in config");
+  throw new Error("❌ Razorpay keys missing in config");
+} else {
+  console.log("Razorpay keys are present.");
+}
+
+console.log("Aqib1");
 const razorpay = new Razorpay({
-  key_id: config.RAZORPAY_KEY_ID,
-  key_secret: config.RAZORPAY_KEY_SECRET,
+  key_id: config.RAZORPAY_KEY_ID.trim(),
+  key_secret: config.RAZORPAY_KEY_SECRET.trim(),
 });
-
+console.log("Aqib2");
 /**
  * Create an order with Razorpay
  * @param {Object} options { amount, currency, receipt, notes, payment_capture }
@@ -15,9 +23,15 @@ const razorpay = new Razorpay({
 export async function createOrder(options) {
   try {
     const order = await razorpay.orders.create(options);
+    console.log("order: ", order);
     return order;
   } catch (err) {
-    logger.error(`Razorpay createOrder error: ${err.message}`);
+    logger.error("🔥 Razorpay Order Creation Failed");
+
+    if (err?.error) logger.error(err.error);
+    if (err?.response?.data) logger.error(err.response.data);
+    logger.error(JSON.stringify(err, null, 2));
+
     throw err;
   }
 }
@@ -42,5 +56,5 @@ export async function capturePayment(paymentId, amount) {
 export default {
   createOrder,
   fetchPayment,
-  capturePayment
+  capturePayment,
 };

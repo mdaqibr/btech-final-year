@@ -140,4 +140,19 @@ class VendorApprovedFloorSerializer(serializers.Serializer):
             "vendor_branch_name",
         ]
 
+class VendorOnboardedStructureSerializer(serializers.Serializer):
+    company_id = serializers.IntegerField(source="company_vendor.company.id")
+    company_name = serializers.CharField(source="company_vendor.company.name")
+    company_location = serializers.CharField(source="company_vendor.company.location")
+
+    branch_id = serializers.IntegerField(source="floor.building.branch.id")
+    branch_name = serializers.CharField(source="floor.building.branch.branch_name")
+    branch_city = serializers.CharField(source="floor.building.branch.city")
+    branch_state = serializers.CharField(source="floor.building.branch.state")
+
+    floor_id = serializers.IntegerField(source="floor.id")
+    floor_name = serializers.CharField(source="floor.floor_name")
+
+    vendor_branch_id = serializers.IntegerField(source="vendor_branch.id")
+
 

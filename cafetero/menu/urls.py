@@ -21,4 +21,19 @@ urlpatterns = [
         views.VendorBranchFoodListAPIView.as_view(),
         name="vendor-branch-food-list",
     ),
+
+    # Daily Menu under floor.
+    path("daily-menu/", views.DailyMenuView.as_view()),
+    path("daily-menu-items/", views.DailyMenuItemCreateView.as_view()),
+    path("daily-menu-items/<int:pk>/", views.DailyMenuItemUpdateView.as_view()),
+    path("daily-menu-items/<int:pk>/delete/", views.DailyMenuItemDeleteView.as_view()),
+    path("daily-menu-items/manage/", views.DailyMenuItemCreateUpdateView.as_view()),
+    path("daily-menu-items/manage/<int:pk>/", views.DailyMenuItemCreateUpdateView.as_view()),
+  
+    # Special Food
+    path("special-food/", views.SpecialFoodListCreateView.as_view()),
+    path("special-food/<int:pk>/", views.SpecialFoodRetrieveUpdateDestroyView.as_view()),
+    
+    # EMP order;
+    path("employee/today-menu/", views.EmployeeTodayMenuView.as_view()),
 ]

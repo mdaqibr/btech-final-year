@@ -1,21 +1,28 @@
-// Ensure env loads before anything else
-import 'dotenv/config';
-import http from 'http';
-import app from './app.js';
-import config from './config/index.js';
-import logger from './config/logger.js';
+// src/index.js
+import "dotenv/config";
+import http from "http";
+import app from "./app.js";
+import config from "./config/index.js";
+import logger from "./config/logger.js";
 
 const server = http.createServer(app);
 
 server.listen(config.PORT, () => {
-  logger.info(`Payment microservice listening on port ${config.PORT} (env=${config.NODE_ENV})`);
+  const protocol = config.NODE_ENV === "production" ? "https" : "http";
+  const host = config.HOST || "localhost";
+
+  const baseURL = `${protocol}://${host}:${config.PORT}`;
+
+  logger.info(
+    `Payment microservice running at ${baseURL} (env=${config.NODE_ENV})`
+  );
 });
 
-process.on('unhandledRejection', (reason) => {
-  logger.error('Unhandled Rejection:', reason);
-  // In production: consider graceful shutdown and alerting
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled Rejection:", reason);
 });
-process.on('uncaughtException', (err) => {
-  logger.error('Uncaught Exception:', err);
-  process.exit(1); // crash and restart (recommended)
+
+process.on("uncaughtException", (err) => {
+  logger.error("Uncaught Exception:", err);
+  process.exit(1);
 });

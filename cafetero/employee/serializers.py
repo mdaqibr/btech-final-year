@@ -31,7 +31,9 @@ class FloorSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "floor_number"]
 
 class FloorVendorSerializer(serializers.ModelSerializer):
+    vendor_id = serializers.IntegerField(source="vendor_branch.vendor.id")
     vendor_name = serializers.CharField(source="vendor_branch.vendor.name")
+    branch_id = serializers.IntegerField(source="vendor_branch.id")
     branch_name = serializers.CharField(source="vendor_branch.branch_name")
     city = serializers.CharField(source="vendor_branch.city")
     opening = serializers.TimeField(source="service_opening_time")
@@ -42,7 +44,9 @@ class FloorVendorSerializer(serializers.ModelSerializer):
         model = vendor_models.CompanyVendorBranch
         fields = [
             "id",
+            "vendor_id",
             "vendor_name",
+            "branch_id",
             "branch_name",
             "city",
             "opening",

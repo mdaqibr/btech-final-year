@@ -2,8 +2,8 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const links = [
-  { path: "/customer/dashboard", label: "Dashboard" },
-  { path: "/customer/orders", label: "My Orders" },
+  { path: "/employee/dashboard", label: "Dashboard" },
+  { path: "/employee/your-orders", label: "My Orders" },
   { path: "/customer/feedback", label: "Feedback" },
 ];
 

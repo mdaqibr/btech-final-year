@@ -6,7 +6,7 @@ export const getAuthUser = () => {
 
   return {
     isAuthenticated: Boolean(access),
-    user,               // { user_type, name, ... }
+    user,
     access,
   };
 };

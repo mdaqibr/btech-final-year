@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Login = () => {
-  const [email, setEmail] = useState("vendor@c.co");
+  const [email, setEmail] = useState("emp@c.com");
   const [password, setPassword] = useState("@aqib1234");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

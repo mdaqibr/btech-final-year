@@ -68,7 +68,7 @@ export default function FloorVendors() {
                       className="text-muted cursor-pointer"
                       onClick={() =>
                         navigate(
-                          `/employee/floors/${floorId}/vendors/${v.id}/menu`
+                          `/employee/floors/${floorId}/vendors/${v.branch_id}/menu`
                         )
                       }
                     />
@@ -94,7 +94,9 @@ export default function FloorVendors() {
                 <button
                   className="btn btn-outline-primary btn-sm mt-3"
                   onClick={() =>
-                    navigate(`/employee/floors/${floorId}/vendors/${v.id}/menu`)
+                    navigate(
+                      `/employee/floors/${floorId}/vendors/${v.branch_id}/menu`
+                    )
                   }
                 >
                   View Menu

@@ -62,6 +62,7 @@ class FloorVendorsAPIView(APIView):
         ).select_related("vendor_branch__vendor")
 
         return Response({
+            "floor_id": floor_id,
             "floor_name": floor.floor_name,
             "vendors": sez.FloorVendorSerializer(company_vendor_branches, many=True).data
         })
