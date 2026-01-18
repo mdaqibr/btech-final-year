@@ -1,12 +1,31 @@
+# order/serializers.py
 from rest_framework import serializers
 from order import models as order_models
+
+
 class CartItemSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source="daily_menu_item.floor_food.vendor_branch_food.food.name")
-    price = serializers.IntegerField(source="daily_menu_item.special_price_override_cents")
+    name = serializers.CharField(
+        source="daily_menu_item.floor_food.vendor_branch_food.food.name"
+    )
+    price = serializers.IntegerField(
+        source="daily_menu_item.special_price_override_cents"
+    )
+
+    is_available = serializers.BooleanField(
+        source="daily_menu_item.is_available",
+        read_only=True
+    )
 
     class Meta:
         model = order_models.CartItem
-        fields = ["id", "daily_menu_item", "name", "price", "quantity"]
+        fields = [
+            "id",
+            "daily_menu_item",
+            "name",
+            "price",
+            "quantity",
+            "is_available",
+        ]
 
 
 class CartSerializer(serializers.ModelSerializer):

@@ -1,9 +1,19 @@
-// src / pages / employee / TodayMenuItems.jsx;
+// src/pages/employee/TodayMenuItems.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEmployeeTodayMenu } from "../../api/employee";
 import { addToCart, getCart } from "../../api/order";
-import { Plus, Minus, ArrowLeft, Search, X, ShoppingCart } from "lucide-react";
+import {
+  Plus,
+  Minus,
+  ArrowLeft,
+  Search,
+  X,
+  ShoppingCart,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function TodayMenuItems() {
   const { floorId, vendorBranchId, foodType } = useParams();
@@ -13,6 +23,9 @@ export default function TodayMenuItems() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [error, setError] = useState("");
+
+  /* ---------------- Fetch Menu ---------------- */
 
   useEffect(() => {
     setLoading(true);
@@ -27,12 +40,16 @@ export default function TodayMenuItems() {
       .finally(() => setLoading(false));
   }, [floorId, vendorBranchId, foodType, search]);
 
+  /* ---------------- Fetch Cart Count ---------------- */
+
   useEffect(() => {
     getCart().then((r) => {
       const total = r.data.items.reduce((acc, i) => acc + i.quantity, 0);
       setCartCount(total);
     });
   }, []);
+
+  /* ---------------- Helpers ---------------- */
 
   const humanize = (str) =>
     str.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -55,11 +72,31 @@ export default function TodayMenuItems() {
     );
   };
 
-  const handleAddToCart = (item) => {
-    addToCart(item.id, item.qty).then(() => {
+  /* ---------------- Add to Cart ---------------- */
+
+  const handleAddToCart = async (item) => {
+    setError("");
+
+    try {
+      await addToCart(item.id, item.qty);
       setCartCount((prev) => prev + item.qty);
-    });
+    } catch (e) {
+      const msg =
+        e?.response?.data?.detail ||
+        "This item is no longer available";
+
+      setError(msg);
+
+      // 🔥 Mark item unavailable locally (UX improvement)
+      setItems((prev) =>
+        prev.map((i) =>
+          i.id === item.id ? { ...i, is_available: false } : i
+        )
+      );
+    }
   };
+
+  /* ---------------- UI ---------------- */
 
   return (
     <>
@@ -92,7 +129,15 @@ export default function TodayMenuItems() {
         </button>
       </div>
 
-      {/* SEARCH BAR */}
+      {/* ERROR */}
+      {error && (
+        <div className="alert alert-warning d-flex align-items-center gap-2">
+          <AlertTriangle size={18} />
+          {error}
+        </div>
+      )}
+
+      {/* SEARCH */}
       <div className="mb-4">
         <div className="input-group shadow-sm">
           <span className="input-group-text bg-white border-0">
@@ -123,8 +168,24 @@ export default function TodayMenuItems() {
         ) : items.length ? (
           items.map((i) => (
             <div key={i.id} className="col-md-6 col-lg-4">
-              <div className="card border-0 shadow-sm p-3 h-100">
-                <h6 className="fw-bold">{i.name}</h6>
+              <div
+                className={`card border-0 shadow-sm p-3 h-100 ${
+                  !i.is_available ? "opacity-75" : ""
+                }`}
+              >
+                <div className="d-flex justify-content-between">
+                  <h6 className="fw-bold">{i.name}</h6>
+                  {i.is_available ? (
+                    <span className="badge bg-success d-flex gap-1">
+                      <CheckCircle2 size={12} /> Available
+                    </span>
+                  ) : (
+                    <span className="badge bg-danger d-flex gap-1">
+                      <XCircle size={12} /> Unavailable
+                    </span>
+                  )}
+                </div>
+
                 <p className="small text-muted mb-2">{i.description}</p>
 
                 <div className="d-flex justify-content-between align-items-center mt-auto">
@@ -133,6 +194,7 @@ export default function TodayMenuItems() {
                   <div className="d-flex gap-2 align-items-center">
                     <button
                       className="btn btn-light btn-sm"
+                      disabled={!i.is_available}
                       onClick={() => decrementQty(i.id)}
                     >
                       <Minus size={14} />
@@ -142,6 +204,7 @@ export default function TodayMenuItems() {
 
                     <button
                       className="btn btn-light btn-sm"
+                      disabled={!i.is_available}
                       onClick={() => incrementQty(i.id)}
                     >
                       <Plus size={14} />
@@ -151,6 +214,7 @@ export default function TodayMenuItems() {
 
                 <button
                   className="btn btn-success btn-sm mt-3 w-100"
+                  disabled={!i.is_available}
                   onClick={() => handleAddToCart(i)}
                 >
                   Add to Cart

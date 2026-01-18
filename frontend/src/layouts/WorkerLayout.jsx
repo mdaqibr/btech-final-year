@@ -4,8 +4,9 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const links = [
-  { path: "/worker/dashboard", label: "Dashboard" },
+  // { path: "/worker/dashboard", label: "Dashboard" },
   { path: "/worker/today-orders", label: "Today's Orders" },
+  { path: "/worker/today-menu", label: "Today's Menu" },
   { path: "/worker/tasks", label: "Tasks" },
   { path: "/worker/feedback", label: "Feedback" },
 ];

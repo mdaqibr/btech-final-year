@@ -6,6 +6,8 @@ if (!config.RAZORPAY_KEY_ID || !config.RAZORPAY_KEY_SECRET) {
   console.log("❌ Razorpay keys missing in config");
   throw new Error("❌ Razorpay keys missing in config");
 } else {
+  console.log("config.RAZORPAY_KEY_SECRET: ", config.RAZORPAY_KEY_SECRET)
+  console.log("config.RAZORPAY_KEY_SECRET: ", config.RAZORPAY_KEY_ID)
   console.log("Razorpay keys are present.");
 }
 

@@ -6,4 +6,6 @@ urlpatterns = [
     path("token/refresh/", views.WorkerTokenRefreshView.as_view()),
     path("today-orders/", views.TodayConfirmedOrdersView.as_view()),
     path("update-status/<int:pk>/", views.WorkerUpdateOrderStatusView.as_view()),
+    path("today-menu/", views.WorkerTodayMenuView.as_view()),
+    path("menu-toggle/<int:pk>/", views.WorkerToggleMenuAvailabilityView.as_view()),
 ]

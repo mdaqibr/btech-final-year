@@ -57,6 +57,7 @@ import VendorBranchDetails from "./pages/vendor/branches/VendorBranchDetails";
 
 // WORKER
 import TodayOrders from "./pages/worker/TodayOrders";
+import TodayMenu from "./pages/worker/TodayMenu";
 
 function App() {
   const { isAuthenticated, user } = getAuthUser();
@@ -206,7 +207,8 @@ function App() {
         }
       >
         <Route path="dashboard" element={<WorkerDashboard />} />
-        <Route path="today-orders" element={<TodayOrders />} />;
+        <Route path="today-orders" element={<TodayOrders />} />
+        <Route path="today-menu" element={<TodayMenu />} />
       </Route>
 
       {/* ---------- FALLBACK ---------- */}

@@ -1,4 +1,5 @@
 # worker/views.py
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -7,6 +8,7 @@ from worker.serializers import WorkerLoginSerializer
 from worker.authentication import WorkerJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from order import models as order_models
+from menu import models as menu_models
 
 class WorkerLoginView(APIView):
     permission_classes = [AllowAny]
@@ -111,3 +113,60 @@ class WorkerUpdateOrderStatusView(APIView):
         order.save()
 
         return Response({"success": True, "status": order.status})
+
+class WorkerTodayMenuView(APIView):
+    authentication_classes = [WorkerJWTAuthentication]
+
+    def get(self, request):
+        worker = request.user
+        today = timezone.now().strftime("%A").lower()
+
+        qs = (
+            menu_models.DailyMenuItem.objects.filter(
+                daily_menu__floor=worker.company_floor,
+                daily_menu__week_day=today,
+            )
+            .select_related(
+                "floor_food__vendor_branch_food__food"
+            )
+            .order_by("floor_food__vendor_branch_food__food__name")
+        )
+
+        data = []
+        for item in qs:
+            food = item.floor_food.vendor_branch_food.food
+            data.append({
+                "id": item.id,
+                "name": item.special_name_override or food.name,
+                "type": food.type,
+                "is_available": item.is_available,
+            })
+
+        return Response(data)
+
+class WorkerToggleMenuAvailabilityView(APIView):
+    authentication_classes = [WorkerJWTAuthentication]
+
+    def post(self, request, pk):
+        worker = request.user
+        today = timezone.now().strftime("%A").lower()
+
+        item = (
+            menu_models.DailyMenuItem.objects.filter(
+                id=pk,
+                daily_menu__floor=worker.company_floor,
+                daily_menu__week_day=today,
+            )
+            .first()
+        )
+
+        if not item:
+            raise PermissionDenied("Menu item not found")
+
+        item.is_available = not item.is_available
+        item.save(update_fields=["is_available"])
+
+        return Response({
+            "success": True,
+            "is_available": item.is_available
+        })

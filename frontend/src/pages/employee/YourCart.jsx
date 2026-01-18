@@ -4,8 +4,8 @@ import {
   removeFromCart,
   updateCartQty,
   verifyPayment,
+  createOrder,
 } from "../../api/order";
-import { createOrder } from "../../api/order";
 import {
   ShoppingCart,
   CheckCircle2,
@@ -13,6 +13,8 @@ import {
   Plus,
   Minus,
   Trash2,
+  AlertTriangle,
+  XCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -25,13 +27,21 @@ export default function YourCart() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const loadCart = () => getCart().then((r) => setCart(r.data.items));
+  const loadCart = async () => {
+    const r = await getCart();
+    setCart(r.data.items);
+  };
 
   useEffect(() => {
     loadCart();
   }, []);
 
+  /* ----------------- Selection Logic ----------------- */
+
   const toggleSelect = (item) => {
+    if (!item.is_available) return;
+
+    setError("");
     setSelected((prev) =>
       prev.find((i) => i.id === item.id)
         ? prev.filter((i) => i.id !== item.id)
@@ -40,10 +50,18 @@ export default function YourCart() {
   };
 
   const toggleSelectAll = () => {
-    setSelected(selected.length === cart.length ? [] : [...cart]);
+    setError("");
+    const availableItems = cart.filter((i) => i.is_available);
+    setSelected(
+      selected.length === availableItems.length ? [] : availableItems
+    );
   };
 
+  /* ----------------- Cart Actions ----------------- */
+
   const updateQty = async (item, type) => {
+    if (!item.is_available) return;
+
     setLoadingAction((p) => ({ ...p, [`${item.id}-${type}`]: true }));
     const newQty =
       type === "inc" ? item.quantity + 1 : Math.max(1, item.quantity - 1);
@@ -69,6 +87,8 @@ export default function YourCart() {
     }
   };
 
+  /* ----------------- Order ----------------- */
+
   const handlePlaceOrder = async () => {
     if (!selected.length) return;
 
@@ -77,12 +97,11 @@ export default function YourCart() {
 
     try {
       const cart_item_ids = selected.map((i) => i.id);
-
       const res = await createOrder({ cart_item_ids });
 
       const options = {
         key: res.data.razorpay_key,
-        amount: res.data.amount, // ⚠️ DO NOT multiply
+        amount: res.data.amount,
         currency: "INR",
         name: "Cafetero",
         description: "Food Order",
@@ -94,44 +113,13 @@ export default function YourCart() {
           contact: res.data.user?.phone || "9999999999",
         },
 
-        theme: {
-          color: "#0d6efd",
-        },
-
-        config: {
-          display: {
-            blocks: {
-              upi: {
-                name: "Pay using UPI",
-                instruments: [{ method: "upi" }],
-              },
-              card: {
-                name: "Pay using Card",
-                instruments: [{ method: "card" }],
-              },
-              wallet: {
-                name: "Pay using Wallet",
-                instruments: [{ method: "wallet" }],
-              },
-              netbanking: {
-                name: "Pay using Net Banking",
-                instruments: [{ method: "netbanking" }],
-              },
-            },
-            sequence: [
-              "block.upi",
-              "block.card",
-              "block.wallet",
-              "block.netbanking",
-            ],
-            preferences: {
-              show_default_blocks: false,
-            },
-          },
-        },
+        theme: { color: "#0d6efd" },
 
         handler: async function (response) {
           await verifyPayment(response);
+
+          // ✅ IMPORTANT FIX
+          setPlacingOrder(false);
           setOrderSuccess(true);
         },
 
@@ -143,16 +131,31 @@ export default function YourCart() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (e) {
-      setError("Unable to start payment.");
-      console.log("ERRROR: ", e);
+      const msg =
+        e?.response?.data?.detail ||
+        e?.response?.data?.non_field_errors?.[0] ||
+        "Some selected items are unavailable";
+
+      setError(msg);
+      await loadCart();
       setPlacingOrder(false);
     }
   };
 
-  const totalPrice = selected.reduce((s, i) => s + i.price * i.quantity, 0);
+  /* ----------------- Derived ----------------- */
+
+  const totalPrice = selected.reduce(
+    (s, i) => s + i.price * i.quantity,
+    0
+  );
+
+  const availableCount = cart.filter((i) => i.is_available).length;
+
+  /* ----------------- UI ----------------- */
 
   return (
     <div className="container mt-4">
+      {/* HEADER */}
       <div className="d-flex align-items-center gap-2 mb-3">
         <button
           className="btn btn-light rounded-circle shadow-sm"
@@ -164,28 +167,46 @@ export default function YourCart() {
         <h4 className="fw-bold m-0">Your Cart</h4>
       </div>
 
-      {cart.length > 0 && (
+      {availableCount > 0 && (
         <div className="mb-2">
           <input
             type="checkbox"
-            checked={selected.length === cart.length}
+            checked={selected.length === availableCount}
             onChange={toggleSelectAll}
           />{" "}
-          <small className="fw-semibold">All</small>
+          <small className="fw-semibold">All Available</small>
         </div>
       )}
 
       {cart.map((c) => (
-        <div key={c.id} className="p-3 mb-2 rounded-3 shadow-sm bg-light">
+        <div
+          key={c.id}
+          className={`p-3 mb-2 rounded-3 shadow-sm ${
+            c.is_available ? "bg-light" : "bg-secondary bg-opacity-10"
+          }`}
+        >
           <div className="d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center gap-2">
               <input
                 type="checkbox"
+                disabled={!c.is_available}
                 checked={!!selected.find((i) => i.id === c.id)}
                 onChange={() => toggleSelect(c)}
               />
+
               <div>
-                <div className="fw-semibold">{c.name}</div>
+                <div className="fw-semibold d-flex align-items-center gap-2">
+                  {c.name}
+                  {c.is_available ? (
+                    <span className="badge bg-success d-flex gap-1">
+                      <CheckCircle2 size={12} /> Available
+                    </span>
+                  ) : (
+                    <span className="badge bg-danger d-flex gap-1">
+                      <XCircle size={12} /> Unavailable
+                    </span>
+                  )}
+                </div>
                 <small className="text-muted">₹{c.price}</small>
               </div>
             </div>
@@ -193,47 +214,39 @@ export default function YourCart() {
             <div className="d-flex align-items-center gap-2">
               <button
                 className="btn btn-sm btn-light"
+                disabled={!c.is_available}
                 onClick={() => updateQty(c, "dec")}
-                disabled={loadingAction[`${c.id}-dec`]}
               >
-                {loadingAction[`${c.id}-dec`] ? (
-                  <span className="spinner-border spinner-border-sm"></span>
-                ) : (
-                  <Minus size={14} />
-                )}
+                <Minus size={14} />
               </button>
 
               <span>{c.quantity}</span>
 
               <button
                 className="btn btn-sm btn-light"
+                disabled={!c.is_available}
                 onClick={() => updateQty(c, "inc")}
-                disabled={loadingAction[`${c.id}-inc`]}
               >
-                {loadingAction[`${c.id}-inc`] ? (
-                  <span className="spinner-border spinner-border-sm"></span>
-                ) : (
-                  <Plus size={14} />
-                )}
+                <Plus size={14} />
               </button>
 
               <button
                 className="btn btn-sm btn-danger"
                 onClick={() => removeItem(c.id)}
-                disabled={loadingAction[`${c.id}-del`]}
               >
-                {loadingAction[`${c.id}-del`] ? (
-                  <span className="spinner-border spinner-border-sm"></span>
-                ) : (
-                  <Trash2 size={14} />
-                )}
+                <Trash2 size={14} />
               </button>
             </div>
           </div>
         </div>
       ))}
 
-      {error && <div className="alert alert-danger">{error}</div>}
+      {error && (
+        <div className="alert alert-warning d-flex align-items-center gap-2">
+          <AlertTriangle size={18} />
+          {error}
+        </div>
+      )}
 
       {selected.length > 0 && (
         <div className="mt-4 p-3 bg-primary text-white rounded-3 d-flex justify-content-between">
@@ -246,13 +259,12 @@ export default function YourCart() {
             disabled={placingOrder}
             className="btn btn-light text-primary fw-semibold"
           >
-            {placingOrder ? "Processing..." : <CheckCircle2 size={18} />} Place
-            Order
+            Place Order
           </button>
         </div>
       )}
 
-      {/* PROCESSING MODAL */}
+      {/* ---------------- PROCESSING MODAL ---------------- */}
       {placingOrder && (
         <div
           className="modal fade show d-block"
@@ -267,7 +279,7 @@ export default function YourCart() {
         </div>
       )}
 
-      {/* SUCCESS MODAL */}
+      {/* ---------------- SUCCESS MODAL ---------------- */}
       {orderSuccess && (
         <div
           className="modal fade show d-block"
@@ -280,7 +292,7 @@ export default function YourCart() {
                 onClick={() => navigate("/employee/your-orders")}
                 className="btn btn-success mt-3 px-4"
               >
-                Track Your Order →
+                View Your Orders →
               </button>
             </div>
           </div>

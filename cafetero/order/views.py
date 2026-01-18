@@ -23,20 +23,46 @@ class AddToCartView(APIView):
         item_id = request.data.get("item_id")
         qty = int(request.data.get("qty", 1))
 
+        if not item_id:
+            return Response(
+                {"detail": "Item id is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            menu_item = DailyMenuItem.objects.get(id=item_id)
+        except DailyMenuItem.DoesNotExist:
+            return Response(
+                {"detail": "Menu item not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if not menu_item.is_available:
+            return Response(
+                {
+                    "detail": "This item is no longer available. Please refresh the menu."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         cart, _ = order_models.Cart.objects.get_or_create(user=request.user)
-        menu_item = DailyMenuItem.objects.get(id=item_id)
 
         cart_item, created = order_models.CartItem.objects.get_or_create(
-            cart=cart, daily_menu_item=menu_item
+            cart=cart,
+            daily_menu_item=menu_item,
         )
 
-        if not created:
-            cart_item.quantity += qty
-        else:
+        if created:
             cart_item.quantity = qty
+        else:
+            cart_item.quantity += qty
 
         cart_item.save()
-        return Response({"message": "Item added to cart"})
+
+        return Response(
+            {"message": "Item added to cart"},
+            status=status.HTTP_200_OK,
+        )
       
 class UpdateCartQtyView(APIView):
     authentication_classes = [AppJWTAuthentication]
@@ -103,6 +129,8 @@ class CreateOrderView(APIView):
         if not selected_ids:
             raise ValidationError("No items selected")
 
+        print("selected_ids: ", selected_ids)
+
         cart_items = request.user.cart.items.filter(id__in=selected_ids).select_for_update()
 
         if not cart_items.exists():
@@ -111,7 +139,7 @@ class CreateOrderView(APIView):
         total = 0
         for item in cart_items:
             if not item.daily_menu_item.is_available:
-                raise ValidationError(f"{item.daily_menu_item.name} unavailable")
+                raise ValidationError(f"{item.daily_menu_item.special_name_override} unavailable")
             total += item.quantity * item.daily_menu_item.special_price_override_cents
 
         app_user = account_models.User.objects.select_for_update().get(email=request.user.email)
@@ -136,12 +164,16 @@ class CreateOrderView(APIView):
         )
 
         order.razorpay_order_id = r.json()["order"]["id"]
+
+        print("RESPONSE: ", r.json())
         order.save()
+
+        print("RAZORPAY_KEY_ID: ", settings.RAZORPAY_KEY_ID)
 
         return Response({
             "order_id": order.id,
             "razorpay_order_id": order.razorpay_order_id,
-            "razorpay_key": 'rzp_test_S2cRNRFQQod6jm',
+            "razorpay_key": settings.RAZORPAY_KEY_ID,
             "amount": total,
             "user": {
                 "name": request.user.email,
@@ -151,21 +183,33 @@ class CreateOrderView(APIView):
         })
 
 class VerifyPaymentView(APIView):
+    authentication_classes = [AppJWTAuthentication]
+
     def post(self, request):
         data = request.data
 
+        print("verification data:", data)
+
+        print("settings.RAZORPAY_KEY_SECRET.encode(): ", settings.RAZORPAY_KEY_SECRET.encode())
         generated_signature = hmac.new(
             settings.RAZORPAY_KEY_SECRET.encode(),
             f"{data['razorpay_order_id']}|{data['razorpay_payment_id']}".encode(),
             hashlib.sha256
         ).hexdigest()
 
+        print("GENERATED_SIGNATURE: ", generated_signature)
+
         if generated_signature != data["razorpay_signature"]:
             raise AuthenticationFailed("Invalid Razorpay Signature")
+
+        print("RAZORPYA_SIGNATURE: ", data["razorpay_signature"])
 
         order = order_models.Order.objects.get(
             razorpay_order_id=data["razorpay_order_id"]
         )
+
+        print("ORDER_ID: ", data["razorpay_order_id"])
+
         order.status = "CONFIRMED"
         order.save()
 
@@ -187,16 +231,23 @@ class PaymentWebhookView(APIView):
         sig = request.headers.get("X-Razorpay-Signature")
         payload = json.dumps(request.data, separators=(",", ":"))
 
+        print("PAYLOAD: ", payload)
+
         expected = hmac.new(
             settings.RAZORPAY_WEBHOOK_SECRET.encode(),
             payload.encode(),
             hashlib.sha256
         ).hexdigest()
 
+        print("EXPECTED: ", expected)
+
         if not hmac.compare_digest(sig, expected):
             raise AuthenticationFailed("Invalid Razorpay Signature")
 
         order_id = request.data["payload"]["payment"]["entity"]["order_id"]
+
+        print("ORDER ID: ", order_id)
+
         order = order_models.Order.objects.select_for_update().get(
             razorpay_order_id=order_id
         )
