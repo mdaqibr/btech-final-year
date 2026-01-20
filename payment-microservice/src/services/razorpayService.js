@@ -17,6 +17,21 @@ const razorpay = new Razorpay({
   key_secret: config.RAZORPAY_KEY_SECRET.trim(),
 });
 console.log("Aqib2");
+
+export async function fetchPaymentsByOrderId(orderId) {
+  return razorpay.payments.all({ order_id: orderId });
+}
+
+/**
+ * Refund a payment
+ * @param {string} paymentId
+ * @param {number} amount - optional in smallest unit (paise)
+ */
+export async function refundPayment(paymentId, amount = null) {
+  const options = amount ? { amount } : {};
+  return razorpay.payments.refund(paymentId, options);
+}
+
 /**
  * Create an order with Razorpay
  * @param {Object} options { amount, currency, receipt, notes, payment_capture }

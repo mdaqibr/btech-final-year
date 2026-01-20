@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 const links = [
   { path: "/employee/dashboard", label: "Dashboard" },
   { path: "/employee/your-orders", label: "My Orders" },
-  { path: "/customer/feedback", label: "Feedback" },
+  // { path: "/customer/feedback", label: "Feedback" },
 ];
 
 export default function CustomerLayout() {

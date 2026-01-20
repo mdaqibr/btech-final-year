@@ -15,7 +15,8 @@ export const updateCartQty = (cart_item_id, qty) =>
 export const createOrder = (payload) => api.post("/order/create/", payload);
 export const verifyPayment = (data) => api.post("/order/verify/", data);
 
-export const getMyOrders = () => api.get("/order/my-orders/");
+export const getMyOrders = ({ page = 1, page_size = 5 } = {}) =>
+  api.get("/order/my-orders/", { params: { page, page_size } });
 
 export const cancelOrder = (orderId) =>
   api.post(`/order/cancel/${orderId}/`);

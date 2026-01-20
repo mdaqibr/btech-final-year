@@ -26,19 +26,36 @@ from accounts.services.email.otp_email import send_otp_email
 # LOGIN
 class LoginView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
-        print("request-data: ", request.data)
+        print("request-data:", request.data)
+
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         user = serializer.validated_data["user"]
+
+        # Block login if email not verified / inactive
+        if not user.is_active:
+            return Response(
+                {
+                    "success": False,
+                    "message": "Your email is not verified. Please verify your email before logging in."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-            "user": UserSerializer(user).data
-        })
+        return Response(
+            {
+                "success": True,
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserSerializer(user).data
+            },
+            status=status.HTTP_200_OK
+        )
 
 def api_response(success, message, data=None, status_code=200):
     return Response({"success": success, "message": message, "data": data}, status=status_code)
@@ -55,6 +72,7 @@ class RegisterCompanyUser(APIView):
             user_type = UserType.objects.get(name="Company")
             user, created = User.objects.get_or_create(
                 email=email,
+                is_active=False,
                 defaults={"user_type": user_type}
             )
 
@@ -123,6 +141,9 @@ class VerifyOTP(APIView):
             otp_entered = ser.validated_data["otp"]
 
             ok, msg = verify_otp(email, otp_entered)
+            user = User.objects.get(email=email)
+            user.is_active = True
+            user.save(update_fields=["is_active"])
             if not ok:
                 return api_response(False, msg, status_code=400)
 
@@ -142,7 +163,7 @@ class UpdateCompanyInfo(APIView):
 
             # Get User
             try:
-                user = User.objects.get(email="md.aqib@unthinkable.co")
+                user = User.objects.get(email=email)
             except User.DoesNotExist:
                 return api_response(False, "User not found", 404)
 
@@ -230,6 +251,7 @@ class RegisterVendorUser(APIView):
 
             user, created = User.objects.get_or_create(
                 email=email,
+                is_active=False,
                 defaults={"user_type": user_type}
             )
 
@@ -299,6 +321,10 @@ class VendorVerifyOTP(APIView):
             ok, msg = verify_otp(email, otp_entered)
             if not ok:
                 return api_response(False, msg, 400)
+            
+            user = User.objects.get(email=email)
+            user.is_active = True
+            user.save(update_fields=["is_active"])
 
             return api_response(True, "Email verified")
 
@@ -378,6 +404,7 @@ class RegisterEmployeeUser(APIView):
 
             user, created = User.objects.get_or_create(
                 email=email,
+                is_active=False,
                 defaults={"user_type": user_type}
             )
 
@@ -447,6 +474,10 @@ class EmployeeVerifyOTP(APIView):
             ok, msg = verify_otp(email, otp_entered)
             if not ok:
                 return api_response(False, msg, 400)
+            
+            user = User.objects.get(email=email)
+            user.is_active = True
+            user.save(update_fields=["is_active"])
 
             return api_response(True, "Email verified")
 
@@ -538,6 +569,9 @@ class UpdateEmployeeInfo(APIView):
                 ser.save()
             else:
                 ser.save(user=user)
+
+            user.profile_completed = True
+            user.save(update_fields=["profile_completed"])
 
             return api_response(True, "Employee information updated", {
                 "employee_id": employee.id if employee else ser.instance.id

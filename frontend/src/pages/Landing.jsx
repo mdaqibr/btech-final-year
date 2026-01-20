@@ -118,14 +118,14 @@ const Landing = () => {
 
             <button
               className="btn btn-outline-primary btn-lg px-4 d-flex align-items-center gap-2"
-              onClick={() => navigate("/register/vendor")}
+              onClick={() => navigate("/vendors/new")}
             >
               <Store size={20} /> Register as Vendor
             </button>
 
             <button
               className="btn btn-outline-secondary btn-lg px-4 d-flex align-items-center gap-2"
-              onClick={() => navigate("/register/employee")}
+              onClick={() => navigate("/employees/new")}
             >
               <Users size={20} /> Register as Employee
             </button>

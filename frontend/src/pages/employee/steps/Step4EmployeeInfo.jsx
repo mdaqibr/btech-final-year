@@ -76,7 +76,7 @@ const Step4EmployeeInfo = ({ email, onNext }) => {
     >
       <GreetingBlock
         title="Complete your profile"
-        subtitle="Fill in your employee details to continue"
+        subtitle="Fill your details to continue"
         email={email}
       />
 

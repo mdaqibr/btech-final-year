@@ -25,13 +25,9 @@ const Login = () => {
       localStorage.setItem("user-data", JSON.stringify(data.user));
 
       console.log("✅ LOGIN SUCCESS:", data);
-      console.log("👤 User Type:", data.user.user_type);
-      await new Promise((r) => setTimeout(r, 200)); // allow logs
 
-      // Redirect based on user_type
       const userType = data.user.user_type;
 
-      // admin@cafetero.com
       switch (userType) {
         case "Admin":
           navigate("/admin");
@@ -53,19 +49,23 @@ const Login = () => {
       }
     } catch (err) {
       console.log("ERROR:", err);
-      setError("Something went wrong");
+      setError(err.message); // ⬅️ backend message shown here
     }
+
     setLoading(false);
   };
 
   return (
-    <div
-      className="card shadow-lg p-4 bg-light"
-      style={{ borderRadius: "16px" }}
-    >
-      <h3 className="text-center mb-4 text-primary fw-bold">Cafetero Login</h3>
+    <div className="card shadow-lg p-4 bg-light" style={{ borderRadius: "16px" }}>
+      <h3 className="text-center mb-4 text-primary fw-bold">
+        Cafetero Login
+      </h3>
 
-      {error && <div className="alert alert-danger text-center">{error}</div>}
+      {error && (
+        <div className="alert alert-danger text-center">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleLogin}>
         <div className="mb-3">
@@ -73,7 +73,6 @@ const Login = () => {
           <input
             type="email"
             className="form-control round-shape"
-            placeholder="yourname@company.com"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -85,7 +84,6 @@ const Login = () => {
           <input
             type="password"
             className="form-control round-shape"
-            placeholder="********"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -94,7 +92,7 @@ const Login = () => {
 
         <button
           type="submit"
-          className="btn btn-primary w-100 round-shape mt-3"
+          className="btn btn-primary w-100 mt-3"
           disabled={loading}
         >
           {loading ? (

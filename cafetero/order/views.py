@@ -336,10 +336,41 @@ class CancelOrderView(APIView):
         if order.status != "CONFIRMED":
             raise ValidationError("Only confirmed orders can be cancelled")
 
-        order.status = "CANCELLED"
-        order.save()
+        # Trigger refund via payment microservice
+        r = requests.post(
+            f"{settings.PAYMENT_SERVICE_URL}/payments/refund",
+            headers={"X-SERVICE-TOKEN": settings.PAYMENT_SERVICE_TOKEN},
+            json={"razorpay_order_id": order.razorpay_order_id}
+        )
 
-        return Response({"success": True})
+        if r.status_code != 200:
+            return Response({
+                "success": False,
+                "message": "Refund failed. Order is not cancelled."
+            }, status=400)
+
+        refund_data = r.json()
+        refund_statuses = [f.get("status") for f in refund_data.get("refunds", [])]
+
+        if any(s in ["refunded", "ALREADY_REFUNDED"] for s in refund_statuses):
+            order.status = "CANCELLED"
+            order.save()
+            order_models.PaymentLog.objects.create(
+                order=order,
+                payload=refund_data,
+                status="REFUNDED"
+            )
+            message = "Order cancelled and refunded successfully."
+            success = True
+        else:
+            message = "Refund could not be processed. Order is not cancelled."
+            success = False
+
+        return Response({
+            "success": success,
+            "message": message
+        })
+
 
 class SubmitOrderFeedbackView(APIView):
     authentication_classes = [AppJWTAuthentication]

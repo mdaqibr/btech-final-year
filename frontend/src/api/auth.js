@@ -5,9 +5,13 @@ export const loginAPI = async (email, password) => {
     body: JSON.stringify({ email, password }),
   });
 
+  const data = await response.json();
+  console.log("LOGIN: ", data)
+
   if (!response.ok) {
-    throw new Error("Invalid credentials");
+    // pass backend error message to UI
+    throw new Error(data.message || "Login failed");
   }
 
-  return await response.json();
+  return data;
 };

@@ -14,10 +14,13 @@ class BuildingSerializer(serializers.ModelSerializer):
 class EmployeeDashboardSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source="branch.branch_name")
     buildings = serializers.SerializerMethodField()
+    email = serializers.CharField(source="user.email")
+    profile_completed = serializers.BooleanField(source="user.profile_completed")
+
 
     class Meta:
         model = account_models.Employee
-        fields = ["full_name", "employee_code", "branch_name", "buildings"]
+        fields = ["full_name", "email", "employee_code", "branch_name", "profile_completed", "buildings"]
 
     def get_buildings(self, obj):
         qs = account_models.CompanyBuilding.objects.filter(branch=obj.branch)

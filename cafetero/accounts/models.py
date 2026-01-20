@@ -18,6 +18,7 @@ class User(BaseModel):
     password = models.CharField(max_length=255)
     user_type = models.ForeignKey(UserType, on_delete=models.CASCADE)
     last_login = models.DateTimeField(null=True, blank=True)
+    profile_completed = models.BooleanField(default=False)
 
     class Meta:
         db_table = "app_user"

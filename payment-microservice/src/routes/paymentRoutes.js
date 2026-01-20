@@ -4,6 +4,7 @@ import {
   createOrder,
   verifyPayment,
   handleWebhook,
+  refundPayment
 } from "../controllers/paymentController.js";
 import validateBody from "../middlewares/validateBody.js";
 import verifyWebhook from "../middlewares/verifyWebhook.js";
@@ -32,6 +33,7 @@ router.post(
   createOrder
 );
 router.post("/verify", validateBody(verifySchema), verifyPayment);
+router.post("/refund", verifyServiceToken, refundPayment);
 
 // Webhook uses raw body and signature verification middleware
 router.post("/webhook", verifyWebhook, handleWebhook);

@@ -1,3 +1,4 @@
+// src/pages/employee/YourCart.jsx
 import { useEffect, useState } from "react";
 import {
   getCart,
@@ -15,6 +16,8 @@ import {
   Trash2,
   AlertTriangle,
   XCircle,
+  Coffee,
+  Loader2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -25,11 +28,19 @@ export default function YourCart() {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [loadingCart, setLoadingCart] = useState(true);
   const navigate = useNavigate();
 
   const loadCart = async () => {
-    const r = await getCart();
-    setCart(r.data.items);
+    setLoadingCart(true);
+    try {
+      const r = await getCart();
+      setCart(r.data.items);
+    } catch {
+      setError("Failed to load cart");
+    } finally {
+      setLoadingCart(false);
+    }
   };
 
   useEffect(() => {
@@ -37,10 +48,8 @@ export default function YourCart() {
   }, []);
 
   /* ----------------- Selection Logic ----------------- */
-
   const toggleSelect = (item) => {
     if (!item.is_available) return;
-
     setError("");
     setSelected((prev) =>
       prev.find((i) => i.id === item.id)
@@ -52,19 +61,14 @@ export default function YourCart() {
   const toggleSelectAll = () => {
     setError("");
     const availableItems = cart.filter((i) => i.is_available);
-    setSelected(
-      selected.length === availableItems.length ? [] : availableItems
-    );
+    setSelected(selected.length === availableItems.length ? [] : availableItems);
   };
 
   /* ----------------- Cart Actions ----------------- */
-
   const updateQty = async (item, type) => {
     if (!item.is_available) return;
-
     setLoadingAction((p) => ({ ...p, [`${item.id}-${type}`]: true }));
-    const newQty =
-      type === "inc" ? item.quantity + 1 : Math.max(1, item.quantity - 1);
+    const newQty = type === "inc" ? item.quantity + 1 : Math.max(1, item.quantity - 1);
 
     try {
       await updateCartQty(item.id, newQty);
@@ -76,7 +80,6 @@ export default function YourCart() {
 
   const removeItem = async (id) => {
     if (!window.confirm("Remove this item?")) return;
-
     setLoadingAction((p) => ({ ...p, [`${id}-del`]: true }));
     try {
       await removeFromCart(id);
@@ -88,10 +91,8 @@ export default function YourCart() {
   };
 
   /* ----------------- Order ----------------- */
-
   const handlePlaceOrder = async () => {
     if (!selected.length) return;
-
     setPlacingOrder(true);
     setError("");
 
@@ -106,23 +107,17 @@ export default function YourCart() {
         name: "Cafetero",
         description: "Food Order",
         order_id: res.data.razorpay_order_id,
-
         prefill: {
           name: res.data.user?.name || "Customer",
           email: res.data.user?.email || "customer@test.com",
           contact: res.data.user?.phone || "9999999999",
         },
-
         theme: { color: "#0d6efd" },
-
         handler: async function (response) {
           await verifyPayment(response);
-
-          // ✅ IMPORTANT FIX
           setPlacingOrder(false);
           setOrderSuccess(true);
         },
-
         modal: {
           ondismiss: () => setPlacingOrder(false),
         },
@@ -135,7 +130,6 @@ export default function YourCart() {
         e?.response?.data?.detail ||
         e?.response?.data?.non_field_errors?.[0] ||
         "Some selected items are unavailable";
-
       setError(msg);
       await loadCart();
       setPlacingOrder(false);
@@ -143,30 +137,47 @@ export default function YourCart() {
   };
 
   /* ----------------- Derived ----------------- */
-
-  const totalPrice = selected.reduce(
-    (s, i) => s + i.price * i.quantity,
-    0
-  );
-
+  const totalPrice = selected.reduce((s, i) => s + i.price * i.quantity, 0);
   const availableCount = cart.filter((i) => i.is_available).length;
 
   /* ----------------- UI ----------------- */
-
   return (
     <div className="container mt-4">
       {/* HEADER */}
       <div className="d-flex align-items-center gap-2 mb-3">
-        <button
-          className="btn btn-light rounded-circle shadow-sm"
-          onClick={() => navigate(-1)}
-        >
+        <button className="btn btn-light rounded-circle shadow-sm" onClick={() => navigate(-1)}>
           <ArrowLeft size={18} />
         </button>
         <ShoppingCart size={22} />
         <h4 className="fw-bold m-0">Your Cart</h4>
       </div>
 
+      {/* ERROR */}
+      {error && (
+        <div className="alert alert-warning d-flex align-items-center gap-2">
+          <AlertTriangle size={18} />
+          {error}
+        </div>
+      )}
+
+      {/* LOADING */}
+      {loadingCart && (
+        <div className="d-flex flex-column align-items-center justify-content-center py-5 text-muted w-100">
+          <Loader2 size={48} className="mb-3 animate-spin" />
+          Loading your cart...
+        </div>
+      )}
+
+      {/* EMPTY CART */}
+      {!loadingCart && !cart.length && (
+        <div className="d-flex flex-column align-items-center justify-content-center py-5 text-muted w-100">
+          <Coffee size={48} className="mb-3" />
+          <h6 className="fw-bold mb-1">Your Cart is Empty</h6>
+          <p className="text-center small">Add items from today's menu to get started!</p>
+        </div>
+      )}
+
+      {/* SELECT ALL */}
       {availableCount > 0 && (
         <div className="mb-2">
           <input
@@ -174,10 +185,11 @@ export default function YourCart() {
             checked={selected.length === availableCount}
             onChange={toggleSelectAll}
           />{" "}
-          <small className="fw-semibold">All Available</small>
+          <small className="fw-semibold">Select All Available</small>
         </div>
       )}
 
+      {/* CART ITEMS */}
       {cart.map((c) => (
         <div
           key={c.id}
@@ -193,7 +205,6 @@ export default function YourCart() {
                 checked={!!selected.find((i) => i.id === c.id)}
                 onChange={() => toggleSelect(c)}
               />
-
               <div>
                 <div className="fw-semibold d-flex align-items-center gap-2">
                   {c.name}
@@ -219,9 +230,7 @@ export default function YourCart() {
               >
                 <Minus size={14} />
               </button>
-
               <span>{c.quantity}</span>
-
               <button
                 className="btn btn-sm btn-light"
                 disabled={!c.is_available}
@@ -229,7 +238,6 @@ export default function YourCart() {
               >
                 <Plus size={14} />
               </button>
-
               <button
                 className="btn btn-sm btn-danger"
                 onClick={() => removeItem(c.id)}
@@ -241,13 +249,7 @@ export default function YourCart() {
         </div>
       ))}
 
-      {error && (
-        <div className="alert alert-warning d-flex align-items-center gap-2">
-          <AlertTriangle size={18} />
-          {error}
-        </div>
-      )}
-
+      {/* ORDER SUMMARY */}
       {selected.length > 0 && (
         <div className="mt-4 p-3 bg-primary text-white rounded-3 d-flex justify-content-between">
           <div>
@@ -264,17 +266,21 @@ export default function YourCart() {
         </div>
       )}
 
-      {/* ---------------- PROCESSING MODAL ---------------- */}
+      {/* PROCESSING MODAL */}
       {placingOrder && (
         <div
-          className="modal fade show d-block"
-          style={{ background: "#0008" }}
+          className="d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1050 }}
         >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content p-4 text-center">
-              <h5>Processing your order...</h5>
-              <div className="spinner-border mt-3"></div>
-            </div>
+          <div
+            className="d-flex flex-column align-items-center bg-white rounded-4 shadow-lg p-5"
+            style={{ minWidth: "280px" }}
+          >
+            <Loader2 size={48} className="text-primary mb-3 animate-spin" />
+            <h5 className="fw-semibold text-center mb-0">Processing your order...</h5>
+            <p className="text-muted small mt-2 mb-0 text-center">
+              Please do not close this window
+            </p>
           </div>
         </div>
       )}
@@ -282,19 +288,24 @@ export default function YourCart() {
       {/* ---------------- SUCCESS MODAL ---------------- */}
       {orderSuccess && (
         <div
-          className="modal fade show d-block"
-          style={{ background: "#0008" }}
+          className="d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1050 }}
         >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content p-4 text-center">
-              <h4>🎉 Order Placed Successfully!</h4>
-              <button
-                onClick={() => navigate("/employee/your-orders")}
-                className="btn btn-success mt-3 px-4"
-              >
-                View Your Orders →
-              </button>
-            </div>
+          <div
+            className="d-flex flex-column align-items-center bg-white rounded-4 shadow-lg p-5 text-center"
+            style={{ minWidth: "300px" }}
+          >
+            <CheckCircle2 size={60} className="text-success mb-3" />
+            <h4 className="fw-bold mb-2">🎉 Order Placed Successfully!</h4>
+            <p className="text-muted small mb-3">
+              Your food is on its way. You can track your orders anytime.
+            </p>
+            <button
+              onClick={() => navigate("/employee/your-orders")}
+              className="btn btn-success fw-semibold px-4 py-2"
+            >
+              View Your Orders →
+            </button>
           </div>
         </div>
       )}

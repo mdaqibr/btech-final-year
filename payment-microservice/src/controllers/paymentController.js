@@ -35,6 +35,47 @@ export const createOrder = async (req, res, next) => {
   }
 };
 
+export const refundPayment = async (req, res, next) => {
+  try {
+    console.log("Refund the payment.")
+    const { razorpay_order_id } = req.body;
+
+    if (!razorpay_order_id) {
+      return res.status(400).json({ error: "Missing razorpay_order_id" });
+    }
+
+    const payments = await razorpayService.fetchPaymentsByOrderId(razorpay_order_id);
+
+    if (!payments?.items?.length) {
+      return res.status(404).json({ error: "No payments found for this order" });
+    }
+
+    const refunds = [];
+
+    for (const payment of payments.items) {
+      try {
+        const refund = await razorpayService.refundPayment(payment.id, payment.amount);
+        refunds.push({ payment_id: payment.id, status: "refunded", details: refund });
+      } catch (err) {
+        if (
+          err?.error?.code === "BAD_REQUEST_ERROR" &&
+          err?.error?.description?.includes("already refunded")
+        ) {
+          console.warn(`Payment ${payment.id} already refunded.`);
+          refunds.push({ payment_id: payment.id, status: "ALREADY_REFUNDED" });
+        } else {
+          refunds.push({ payment_id: payment.id, status: "FAILED", error: err.message || err });
+        }
+      }
+    }
+
+    res.json({ success: true, refunds });
+  } catch (err) {
+    console.log("ERROR: ", err);
+    next(err);
+  }
+};
+
 /**
  * POST /payments/verify
  * Verifies a payment signature sent from client after checkout

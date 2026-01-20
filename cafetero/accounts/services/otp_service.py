@@ -22,6 +22,8 @@ def create_or_update_otp(email):
             "is_used": False,
         },
     )
+
+    print("OTP: ", otp)
     return otp
 
 

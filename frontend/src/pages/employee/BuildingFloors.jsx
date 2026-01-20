@@ -22,7 +22,7 @@ export default function BuildingFloors() {
   const hasFloors = data.floors && data.floors.length > 0;
 
   return (
-    <div className="container-fluid px-2 px-md-3">
+    <div className="container-fluid px-2 px-md-4 py-3">
       {/* HEADER */}
       <div className="mb-4 d-flex align-items-center gap-2">
         <button
@@ -64,35 +64,43 @@ export default function BuildingFloors() {
       {hasFloors && (
         <div className="row g-3 g-lg-4">
           {data.floors.map((f, index) => {
-            const bgList = [
-              "bg-primary-subtle",
-              "bg-success-subtle",
-              "bg-warning-subtle",
-              "bg-info-subtle",
+            const accentList = [
+              "border-primary",
+              "border-success",
+              "border-warning",
+              "border-info",
             ];
 
             return (
               <div key={f.id} className="col-12 col-sm-6 col-lg-4">
                 <div
                   role="button"
-                  onClick={() => navigate(`/employee/floors/${f.id}/vendors`)}
-                  className={`card border-0 shadow-sm ${bgList[index % 4]}`}
+                  onClick={() =>
+                    navigate(`/employee/floors/${f.id}/vendors`)
+                  }
+                  className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative floor-card"
                 >
-                  <div className="card-body d-flex align-items-center justify-content-between">
-                    <div className="d-flex align-items-center gap-3">
-                      <div className="bg-white rounded-3 p-2 shadow-sm">
-                        <Layers size={20} className="text-primary" />
-                      </div>
+                  {/* Accent Strip */}
+                  <div
+                    className={`position-absolute top-0 start-0 w-100 border-top border-4 ${
+                      accentList[index % 4]
+                    }`}
+                  />
 
+                  <div className="card-body d-flex align-items-center justify-content-between p-4">
+                    <div className="d-flex align-items-center gap-3">
+                      <div className="bg-white rounded-3 p-3 shadow-sm d-flex align-items-center justify-content-center">
+                        <Layers size={22} className="text-primary" />
+                      </div>
                       <div>
-                        <h6 className="fw-semibold mb-0">{f.name}</h6>
-                        <small className="text-muted">
+                        <h6 className="fw-bold mb-1 text-truncate">{f.name}</h6>
+                        <small className="text-muted d-block">
                           Floor No: {f.floor_number}
                         </small>
                       </div>
                     </div>
 
-                    <ChevronRight className="text-muted" />
+                    <ChevronRight className="text-muted" size={20} />
                   </div>
                 </div>
               </div>
@@ -100,6 +108,18 @@ export default function BuildingFloors() {
           })}
         </div>
       )}
+
+      {/* ===== STYLING ===== */}
+      <style>{`
+        .floor-card {
+          transition: all 0.25s ease;
+          cursor: pointer;
+        }
+        .floor-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+      `}</style>
     </div>
   );
 }

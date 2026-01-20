@@ -1,4 +1,7 @@
 export default function verifyServiceToken(req, res, next) {
+
+  console.log("Verifying token..")
+
   const token = req.headers["x-service-token"];
 
   if (!token || token !== process.env.SECRET_KEY) {

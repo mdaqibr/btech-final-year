@@ -11,9 +11,12 @@ import bgImg from "../../../assets/bg-company.jpg";
 import "../../styles/vendor.css";
 import BrandLogo from "../../components/BrandLogo";
 
-const EmployeeRegister = () => {
-  const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
+const EmployeeRegister = ({
+  initialStep = 1,
+  initialEmail = "",
+}) => {
+  const [step, setStep] = useState(initialStep);
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
 
   return (
@@ -31,7 +34,6 @@ const EmployeeRegister = () => {
 
       {/* LEFT */}
       <div className="vendor-left col-12 col-md-7 d-flex flex-column px-5 py-5">
-        
         <BrandLogo />
 
         <div className="mt-auto">
@@ -56,15 +58,13 @@ const EmployeeRegister = () => {
       </div>
 
       {/* RIGHT */}
-      <div
-        className="vendor-right col-12 col-md-5 bg-white text-dark px-4 px-sm-5 py-5 shadow-lg"
+      <div className="vendor-right col-12 col-md-5 bg-white text-dark px-4 px-sm-5 py-5 shadow-lg"
         style={{ borderTopLeftRadius: "20px", borderTopRightRadius: "20px" }}
       >
         <AnimatePresence mode="wait">
-          
+
           {step === 1 && (
             <Step1Email
-              key="step1"
               email={email}
               setEmail={setEmail}
               onNext={() => setStep(2)}
@@ -73,7 +73,6 @@ const EmployeeRegister = () => {
 
           {step === 2 && (
             <Step2Password
-              key="step2"
               email={email}
               setPassword={setPassword}
               onNext={() => setStep(3)}
@@ -83,7 +82,6 @@ const EmployeeRegister = () => {
 
           {step === 3 && (
             <Step3OTP
-              key="step3"
               email={email}
               onNext={() => setStep(4)}
               onBack={() => setStep(2)}
@@ -92,13 +90,12 @@ const EmployeeRegister = () => {
 
           {step === 4 && (
             <Step4EmployeeInfo
-              key="step4"
               email={email}
               onNext={() => setStep(5)}
             />
           )}
 
-          {step === 5 && <Step5Success key="step5" />}
+          {step === 5 && <Step5Success />}
 
         </AnimatePresence>
       </div>
