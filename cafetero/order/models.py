@@ -48,3 +48,26 @@ class PaymentLog(models.Model):
     payload = models.JSONField()
     status = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class OrderFeedback(models.Model):
+    order = models.OneToOneField(
+        Order, on_delete=models.CASCADE, related_name="feedback"
+    )
+    user = models.ForeignKey(
+        account_models.User, on_delete=models.CASCADE
+    )
+
+    rating = models.PositiveSmallIntegerField()
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(rating__gte=1, rating__lte=5),
+                name="rating_between_1_and_5"
+            )
+        ]
+
+    def __str__(self):
+        return f"Order {self.order.id} - {self.rating}★"

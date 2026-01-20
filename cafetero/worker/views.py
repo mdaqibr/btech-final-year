@@ -1,6 +1,7 @@
 # worker/views.py
 from django.utils import timezone
 from rest_framework.views import APIView
+from django.db import transaction
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,6 +10,7 @@ from worker.authentication import WorkerJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from order import models as order_models
 from menu import models as menu_models
+from notifications.utils import send_app_notification
 
 class WorkerLoginView(APIView):
     permission_classes = [AllowAny]
@@ -84,35 +86,48 @@ class TodayConfirmedOrdersView(APIView):
 class WorkerUpdateOrderStatusView(APIView):
     authentication_classes = [WorkerJWTAuthentication]
 
+    @transaction.atomic
     def post(self, request, pk):
-        worker = request.user
-
-        # Get the order only if it has items on the worker's floor
-        order = (
-            order_models.Order.objects.filter(
-                id=pk,
-                items__daily_menu_item__daily_menu__floor=worker.company_floor
-            )
-            .distinct()
-            .first()
-        )
-
-        if not order:
+        try:
+            order = order_models.Order.objects.select_for_update().get(id=pk)
+        except order_models.Order.DoesNotExist:
             return Response(
-                {"error": "Order not found or not on your floor"}, status=404
+                {"success": False, "message": "Order not found"},
+                status=404
             )
 
-        # Update order status
         if order.status == "CONFIRMED":
             order.status = "PREPARING"
-        elif order.status == "PREPARING":
+            order.save()
+
+            send_app_notification(
+                user=order.user,
+                title="Order is being prepared 🍳",
+                message=f"Your order #{order.id} is now being prepared."
+            )
+
+            return Response({"success": True, "status": order.status})
+
+        if order.status == "PREPARING":
             order.status = "READY"
-        else:
-            return Response({"error": "Invalid state"}, status=400)
+            order.save()
 
-        order.save()
+            send_app_notification(
+                user=order.user,
+                title="Order is ready ✅",
+                message=f"Your order #{order.id} is ready for pickup."
+            )
 
-        return Response({"success": True, "status": order.status})
+            return Response({"success": True, "status": order.status})
+
+        return Response(
+            {
+                "success": False,
+                "message": f"Order cannot be updated from '{order.status}'",
+                "status": order.status,
+            },
+            status=400,
+        )
 
 class WorkerTodayMenuView(APIView):
     authentication_classes = [WorkerJWTAuthentication]

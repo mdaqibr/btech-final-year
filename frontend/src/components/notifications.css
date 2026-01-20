@@ -1,0 +1,42 @@
+.notification-dropdown {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  width: 320px;
+  max-width: calc(100vw - 20px);
+  background: white;
+  padding: 12px;
+  z-index: 1050;
+}
+
+/* Scroll on overflow */
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Notification item */
+.notification-item {
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: #f8f9fa;
+  margin-bottom: 6px;
+}
+
+.notification-item.unread {
+  background: #e7f1ff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+
+/* 📱 MOBILE FIX */
+@media (max-width: 576px) {
+  .notification-dropdown {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 95vw;
+  }
+}

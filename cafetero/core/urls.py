@@ -29,4 +29,5 @@ urlpatterns = [
     path("api/wallet/", include("wallet.urls")),
     path("api/importer/", include("importer.urls")),
     path("api/worker/", include("worker.urls")),
+    path("api/notifications/", include("notifications.urls")),
 ]

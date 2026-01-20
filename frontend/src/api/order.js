@@ -16,3 +16,13 @@ export const createOrder = (payload) => api.post("/order/create/", payload);
 export const verifyPayment = (data) => api.post("/order/verify/", data);
 
 export const getMyOrders = () => api.get("/order/my-orders/");
+
+export const cancelOrder = (orderId) =>
+  api.post(`/order/cancel/${orderId}/`);
+
+export const submitFeedback = (orderId, data) =>
+  api.post(`/order/feedback/${orderId}/`, data);
+
+export const getTodayFeedback = () => api.get("/order/today-feedback/");
+export const getFoodFeedback = (foodId) =>
+  api.get(`/order/food-feedback/${foodId}/`);

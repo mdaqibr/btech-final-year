@@ -12,7 +12,6 @@ export default function CustomerLayout() {
     <>
       <Navbar links={links} />
 
-      {/* Light background grading */}
       <div className="bg-body-secondary min-vh-100">
         <div className="container py-4">
           <div className="bg-white bg-opacity-75 rounded-4 shadow-sm p-3 p-md-4">

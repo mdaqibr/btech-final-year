@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     'service',
     'vendor',
     'wallet',
-    'employee'
+    'employee',
+    'notifications'
 ]
 
 MIDDLEWARE = [

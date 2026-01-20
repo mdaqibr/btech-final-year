@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Coffee, User, LogOut, Menu } from "lucide-react";
+import Notifications from "./Notifications";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -24,24 +25,39 @@ const Navbar = ({ links }) => {
         borderBottom: "1px solid #eaeaea",
       }}
     >
-      {/* SAME CONTAINER AS PAGE */}
       <div className="container">
+        {/* LEFT: BRAND */}
         <span className="navbar-brand fw-bold text-primary d-flex align-items-center gap-2">
           <Coffee size={20} />
           Cafetero
         </span>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-        >
-          <Menu size={20} />
-        </button>
+        {/* RIGHT: Notifications + Hamburger */}
+        <div className="d-flex align-items-center ms-auto gap-2">
+          {/* 🔔 Notifications — ALWAYS VISIBLE */}
+          <Notifications />
 
-        <div className="collapse navbar-collapse" id="navbarContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          {/* ☰ Hamburger */}
+          <button
+            className="navbar-toggler border-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarContent"
+            aria-controls="navbarContent"
+            aria-expanded="false"
+          >
+            <Menu size={22} />
+          </button>
+        </div>
+
+        {/* COLLAPSIBLE CONTENT (USER + LINKS) */}
+        <div
+          className="collapse navbar-collapse justify-content-end"
+          id="navbarContent"
+        >
+          {/* 👤 User Dropdown */}
+          <ul className="navbar-nav align-items-lg-center gap-lg-2 mt-3 mt-lg-0">
+            {/* NAV LINKS */}
             {links.map((link) => (
               <li className="nav-item" key={link.path}>
                 <NavLink
@@ -56,29 +72,31 @@ const Navbar = ({ links }) => {
                 </NavLink>
               </li>
             ))}
+
+            <li className="nav-item dropdown">
+              <button
+                className="btn btn-outline-primary btn-sm dropdown-toggle d-flex align-items-center gap-1"
+                data-bs-toggle="dropdown"
+              >
+                <User size={14} />
+                <span>
+                  {user.email?.split("@")[0] || user.name || "User"}
+                </span>
+              </button>
+
+              <ul className="dropdown-menu dropdown-menu-end shadow">
+                <li>
+                  <button
+                    className="dropdown-item text-danger d-flex align-items-center gap-2"
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </li>
           </ul>
-
-          <div className="dropdown">
-            <button
-              className="btn btn-outline-primary dropdown-toggle d-flex align-items-center gap-2"
-              data-bs-toggle="dropdown"
-            >
-              <User size={16} />
-              {user.email?.split("@")[0] || user.name || "User"}
-            </button>
-
-            <ul className="dropdown-menu dropdown-menu-end shadow">
-              <li>
-                <button
-                  className="dropdown-item text-danger d-flex align-items-center gap-2"
-                  onClick={handleLogout}
-                >
-                  <LogOut size={16} />
-                  Logout
-                </button>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
     </nav>

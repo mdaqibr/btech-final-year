@@ -1,6 +1,8 @@
 import hmac
 import hashlib
 import json
+from django.db.models import Avg, Count, Sum
+from django.utils import timezone
 from django.db import transaction
 import requests
 from django.conf import settings
@@ -13,8 +15,17 @@ from order import models as order_models
 from accounts import models as account_models
 from order import serializers as sez
 from rest_framework import status
-from menu.models import DailyMenuItem
+from menu import models as menu_models
+from rest_framework.pagination import PageNumberPagination
 
+class MyOrdersPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = "page_size"
+
+class FoodFeedbackPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = "page_size"
+    max_page_size = 20
 
 class AddToCartView(APIView):
     authentication_classes = [AppJWTAuthentication]
@@ -30,8 +41,8 @@ class AddToCartView(APIView):
             )
 
         try:
-            menu_item = DailyMenuItem.objects.get(id=item_id)
-        except DailyMenuItem.DoesNotExist:
+            menu_item = menu_models.DailyMenuItem.objects.get(id=item_id)
+        except menu_models.DailyMenuItem.DoesNotExist:
             return Response(
                 {"detail": "Menu item not found"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -111,6 +122,7 @@ class RemoveFromCartView(APIView):
 
         return Response({"message": "Item removed successfully"})
 
+# order/views.py
 class GetCartView(APIView):
     authentication_classes = [AppJWTAuthentication]
 
@@ -271,19 +283,31 @@ class MyOrdersView(APIView):
         orders = (
             order_models.Order.objects
             .filter(user=request.user)
+            .select_related("feedback")
             .prefetch_related(
                 "items__daily_menu_item__floor_food__vendor_branch_food__food"
             )
             .order_by("-created_at")
         )
 
+        paginator = MyOrdersPagination()
+        page = paginator.paginate_queryset(orders, request)
+
         data = []
-        for o in orders:
+        for o in page:
             data.append({
                 "id": o.id,
                 "status": o.status,
                 "total": o.total_amount_cents,
                 "created_at": o.created_at,
+                "feedback": (
+                    {
+                        "rating": o.feedback.rating,
+                        "comment": o.feedback.comment,
+                        "created_at": o.feedback.created_at,
+                    }
+                    if hasattr(o, "feedback") else None
+                ),
                 "items": [
                     {
                         "name": i.daily_menu_item.floor_food.vendor_branch_food.food.name,
@@ -291,24 +315,117 @@ class MyOrdersView(APIView):
                         "price": i.price_cents,
                     }
                     for i in o.items.all()
-                ]
+                ],
             })
 
-        return Response(data)
+        return paginator.get_paginated_response(data)
 
-class UpdateOrderStatusView(APIView):
+class CancelOrderView(APIView):
+    authentication_classes = [AppJWTAuthentication]
+
+    @transaction.atomic
+    def post(self, request, order_id):
+        try:
+            order = order_models.Order.objects.select_for_update().get(
+                id=order_id,
+                user=request.user
+            )
+        except order_models.Order.DoesNotExist:
+            raise ValidationError("Order not found")
+
+        if order.status != "CONFIRMED":
+            raise ValidationError("Only confirmed orders can be cancelled")
+
+        order.status = "CANCELLED"
+        order.save()
+
+        return Response({"success": True})
+
+class SubmitOrderFeedbackView(APIView):
     authentication_classes = [AppJWTAuthentication]
 
     def post(self, request, order_id):
-        order = order_models.Order.objects.get(id=order_id)
+        try:
+            order = order_models.Order.objects.get(
+                id=order_id,
+                user=request.user
+            )
+        except order_models.Order.DoesNotExist:
+            return Response(
+                {"detail": "Order not found"},
+                status=404
+            )
 
-        if order.status == "CONFIRMED":
-            order.status = "PREPARING"
-        elif order.status == "PREPARING":
-            order.status = "READY"
+        if order.status not in ["READY", "COMPLETED"]:
+            return Response(
+                {"detail": "Feedback not allowed yet"},
+                status=400
+            )
 
-        order.save()
+        if hasattr(order, "feedback"):
+            return Response(
+                {"detail": "Feedback already submitted"},
+                status=400
+            )
 
-        # send_order_notification(order.user.id, f"Your order is now {order.status}")
+        serializer = sez.OrderFeedbackSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        return Response({"success": True, "status": order.status})
+        serializer.save(
+            order=order,
+            user=request.user
+        )
+
+        return Response(
+            {"success": True, "message": "Thanks for your feedback!"}
+        )
+
+class TodayFeedbackView(APIView):
+    authentication_classes = [AppJWTAuthentication]
+
+    def get(self, request):
+        today = timezone.now().date()
+
+        feedbacks = (
+            order_models.OrderFeedback.objects
+            .filter(order__created_at__date=today)
+            .select_related("order", "user")
+            .order_by("-created_at")
+        )
+
+        serializer = sez.TodayFeedbackSerializer(feedbacks, many=True)
+        return Response(serializer.data)
+
+class FoodFeedbackView(APIView):
+    authentication_classes = [AppJWTAuthentication]
+
+    def get(self, request, food_id):
+        feedbacks = (
+            order_models.OrderFeedback.objects
+            .filter(order__items__daily_menu_item__id=food_id)
+            .select_related("order", "user")
+            .order_by("-created_at")
+            .distinct()
+        )
+
+        food = menu_models.FoodItem.objects.filter(id=food_id).first()
+
+        stats = feedbacks.aggregate(
+            avg_rating=Avg("rating"),
+            total_ratings=Count("id"),
+            sum_rating=Sum("rating")
+        )
+
+        paginator = FoodFeedbackPagination()
+        page = paginator.paginate_queryset(feedbacks, request)
+
+        serializer = sez.FoodFeedbackSerializer(page, many=True)
+
+        return paginator.get_paginated_response({
+            "id": food.id if food else None,
+            "name": food.name if food else "",
+            "avg_rating": round(stats["avg_rating"] or 0, 1),
+            "total_ratings": stats["total_ratings"] or 0,
+            "sum_rating": stats["sum_rating"] or 0,
+            "feedback": serializer.data,
+        })

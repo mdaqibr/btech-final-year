@@ -20,6 +20,7 @@ import VendorMenu from "./pages/employee/VendorMenu";
 import TodayMenuItems from "./pages/employee/TodayMenuItems";
 import YourCart from "./pages/employee/YourCart";
 import YourOrders from "./pages/employee/YourOrders";
+import FoodFeedback from "./pages/employee/FoodFeedback";
 
 /* Public pages */
 import Landing from "./pages/Landing";
@@ -195,6 +196,7 @@ function App() {
         />
         <Route path="your-cart" element={<YourCart />} />
         <Route path="your-orders" element={<YourOrders />} />
+        <Route path=":itemId/feedback" element={<FoodFeedback />} />
       </Route>
 
       {/* ---------- WORKER ---------- */}

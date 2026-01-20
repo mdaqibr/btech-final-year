@@ -12,4 +12,14 @@ urlpatterns = [
   path("verify/", views.VerifyPaymentView.as_view()),
   path("payment-webhook/", views.PaymentWebhookView.as_view()),
   path("my-orders/", views.MyOrdersView.as_view()),
+  path("cancel/<int:order_id>/", views.CancelOrderView.as_view()),
+  path(
+    "feedback/<int:order_id>/",
+    views.SubmitOrderFeedbackView.as_view(),
+  ),
+  path("today-feedback/", views.TodayFeedbackView.as_view()),
+  path(
+      "food-feedback/<int:food_id>/",
+      views.FoodFeedbackView.as_view()
+  ),
 ]

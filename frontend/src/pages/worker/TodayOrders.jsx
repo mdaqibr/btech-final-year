@@ -1,12 +1,12 @@
-// src/pages/worker/TodayOrders.jsx
 import { useEffect, useState } from "react";
 import { fetchTodayOrders, updateOrderStatus } from "../../api/worker";
-import { CreditCard, Check, Loader2, Clock } from "lucide-react";
+import { CreditCard, Check, Loader2, Clock, AlertTriangle } from "lucide-react";
 
 export default function TodayOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState({});
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     loadOrders();
@@ -23,12 +23,24 @@ export default function TodayOrders() {
   };
 
   const handleUpdate = async (id) => {
-    setUpdating((prev) => ({ ...prev, [id]: true }));
+    setUpdating((p) => ({ ...p, [id]: true }));
+    setMessage("");
+
     try {
-      await updateOrderStatus(id);
-      loadOrders();
+      const res = await updateOrderStatus(id);
+
+      if (!res.success) {
+        setMessage(res.message || "Unable to update order");
+        await loadOrders(); // 🔄 sync UI
+        return;
+      }
+
+      await loadOrders();
+    } catch (err) {
+      setMessage("Order status changed. Refreshing...");
+      await loadOrders();
     } finally {
-      setUpdating((prev) => ({ ...prev, [id]: false }));
+      setUpdating((p) => ({ ...p, [id]: false }));
     }
   };
 
@@ -38,8 +50,8 @@ export default function TodayOrders() {
     PREPARING: "warning",
     READY: "info",
     COMPLETED: "success",
-    FAILED: "danger",
     CANCELLED: "dark",
+    FAILED: "danger",
   };
 
   const buttonColors = {
@@ -61,7 +73,13 @@ export default function TodayOrders() {
 
   return (
     <div className="container py-4">
-      <h3 className="fw-bold mb-4">Today's Orders</h3>
+      <h3 className="fw-bold mb-3">Today's Orders</h3>
+
+      {message && (
+        <div className="alert alert-warning d-flex align-items-center gap-2">
+          <AlertTriangle size={18} /> {message}
+        </div>
+      )}
 
       {loading ? (
         <div className="text-center py-5">
@@ -88,14 +106,8 @@ export default function TodayOrders() {
                     <Clock size={14} /> {formatTime(o.created_at)}
                   </span>
                   <span
-                    className={`badge bg-${
-                      statusColors[o.status]
-                    } text-uppercase`}
-                    style={{
-                      fontSize: "0.75rem",
-                      minWidth: "80px",
-                      textAlign: "center",
-                    }}
+                    className={`badge bg-${statusColors[o.status]} text-uppercase`}
+                    style={{ minWidth: "90px", textAlign: "center" }}
                   >
                     {o.status}
                   </span>
@@ -106,7 +118,7 @@ export default function TodayOrders() {
                 {o.items.map((i, idx) => (
                   <li
                     key={idx}
-                    className="list-group-item d-flex justify-content-between align-items-center px-0 py-1 border-0"
+                    className="list-group-item d-flex justify-content-between px-0 py-1 border-0"
                     style={{ background: "transparent" }}
                   >
                     {i.name}
@@ -117,17 +129,15 @@ export default function TodayOrders() {
                 ))}
               </ul>
 
-              <div className="d-flex justify-content-between align-items-center mt-2">
+              <div className="d-flex justify-content-between align-items-center">
                 <p className="mb-0 fw-semibold d-flex align-items-center gap-1">
                   <CreditCard size={16} /> ₹{o.total.toFixed(2)}
                 </p>
 
-                {["CONFIRMED", "PREPARING"].includes(o.status) && (
+                {["CONFIRMED", "PREPARING"].includes(o.status) ? (
                   <button
                     onClick={() => handleUpdate(o.id)}
-                    className={`btn btn-sm btn-${
-                      buttonColors[o.status]
-                    } d-flex align-items-center gap-1`}
+                    className={`btn btn-sm btn-${buttonColors[o.status]}`}
                     disabled={updating[o.id]}
                   >
                     {updating[o.id] ? (
@@ -138,6 +148,10 @@ export default function TodayOrders() {
                       </>
                     )}
                   </button>
+                ) : (
+                  <small className="text-muted">
+                    No action available
+                  </small>
                 )}
               </div>
             </div>

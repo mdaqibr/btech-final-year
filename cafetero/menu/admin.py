@@ -107,13 +107,3 @@ class SpecialFoodAdmin(admin.ModelAdmin):
     list_filter = ("vendor_branch", "floor", "is_available")
     search_fields = ("name", "vendor_branch__name", "floor__name")
     autocomplete_fields = ("vendor_branch", "floor")
-
-
-# ---------------- FOOD RATING ----------------
-
-@admin.register(FoodRating)
-class FoodRatingAdmin(admin.ModelAdmin):
-    list_display = ("id", "order_item_id", "rating", "created_at")
-    list_filter = ("rating", "created_at")
-    search_fields = ("order_item_id", "comment")
-    readonly_fields = ("created_at",)

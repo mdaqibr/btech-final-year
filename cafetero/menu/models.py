@@ -101,11 +101,12 @@ class SpecialFood(models.Model):
         db_table = "menu_special_food"
         indexes = [models.Index(fields=["vendor_branch", "floor", "available_from"])]
 
-class FoodRating(models.Model):
-    order_item_id = models.IntegerField(db_index=True)
-    rating = models.PositiveSmallIntegerField()
-    comment = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
 
-    class Meta:
-        db_table = "menu_food_rating"
+class FoodRating(models.Model):
+    food = models.OneToOneField(
+        VendorBranchFood,
+        on_delete=models.CASCADE,
+        related_name="rating"
+    )
+    avg_rating = models.FloatField(default=0)
+    total_ratings = models.PositiveIntegerField(default=0)
